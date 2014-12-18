@@ -44,7 +44,7 @@ public class ZooServer {
                         SocketChannel sc = server.accept();
                         logger.info("Accepted socket connection from " + sc.socket().getRemoteSocketAddress());
                         sc.configureBlocking(false);
-                        SelectionKey sk = sc.register(ZooServer.selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                        SelectionKey sk = sc.register(selector, SelectionKey.OP_READ);
                         //attach
                         NIOServerCnxn nioCnxn = new NIOServerCnxn(sc, sk);
                         sk.attach(nioCnxn);

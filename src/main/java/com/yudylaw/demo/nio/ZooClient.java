@@ -52,7 +52,10 @@ public class ZooClient {
                     SocketChannel sock = (SocketChannel) key.channel();
                     int c = sock.read(buffer);
                     if(c < 0){
-                        logger.debug("no more data to read");
+                        //TODO 服务端断开
+                        logger.debug("loss connection to server.");
+                        key.cancel();
+                        close();
                         return;
                     }
                     StringBuilder sb = new StringBuilder();
@@ -88,9 +91,10 @@ public class ZooClient {
         }
     }
     
-    public final void close(){
+    public static void close(){
         if (socketKey != null) {
             SocketChannel sock = (SocketChannel) socketKey.channel();
+            logger.info("Closed socket connection " + sock.socket().getRemoteSocketAddress());
             socketKey.cancel();
             try {
                 sock.socket().shutdownInput();

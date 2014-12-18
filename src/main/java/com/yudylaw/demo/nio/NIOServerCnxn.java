@@ -26,10 +26,12 @@ public class NIOServerCnxn {
     public NIOServerCnxn(SocketChannel sock, SelectionKey sk) throws SocketException {
         this.sock = sock;
         this.sk = sk;
-        //TODO
         this.sock.socket().setTcpNoDelay(true);
+        //拖延
         this.sock.socket().setSoLinger(true, 2);
-        this.sk.interestOps(SelectionKey.OP_READ);
+        //重用
+        this.sock.socket().setReuseAddress(true);
+//        this.sk.interestOps(SelectionKey.OP_READ);
     }
     
     public void doIO(SelectionKey k) throws InterruptedException {
@@ -42,7 +44,10 @@ public class NIOServerCnxn {
                 logger.debug("client is readable");
                 int c = sock.read(buffer);
                 if(c < 0){
-                    logger.debug("no more data to read");
+                    //TODO 客户端断开时会收到READ事件, 避免循环读
+                    logger.debug("loss sock with " + sock.getRemoteAddress());
+                    k.cancel();
+                    close();
                     return;
                 }
                 StringBuilder sb = new StringBuilder();
@@ -52,11 +57,12 @@ public class NIOServerCnxn {
                 sb.append(new String(tmp));
                 buffer.clear();//position置为0，并不清除buffer内容
                 logger.debug(sb.toString());
+                sk.interestOps(sk.interestOps() | SelectionKey.OP_WRITE);
             } else if (k.isWritable()){
                 logger.debug("client is writable");
                 sock.write(ByteBuffer.wrap(new String("hello client").getBytes()));
                 //TODO 根据需要
-                k.interestOps(k.interestOps() & (~SelectionKey.OP_WRITE));
+                sk.interestOps(sk.interestOps() & (~SelectionKey.OP_WRITE));
             }
         } catch (IOException e) {
             logger.debug("io exception", e);
