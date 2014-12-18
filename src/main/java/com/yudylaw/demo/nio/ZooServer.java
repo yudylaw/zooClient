@@ -20,50 +20,50 @@ import java.util.Set;
 public class ZooServer {
 
     private static Selector selector = null;
+    private static ServerSocketChannel channel = null;
+    private final static int TIMEOUT = 1000;
+    
     private final static Logger logger = LoggerFactory.getLogger(ZooServer.class);
-    private static ByteBuffer buffer = ByteBuffer.allocate(1 * 1024);
     
     public static void main(String[] args) throws IOException {
         
         selector = Selector.open();
-        
-        ServerSocketChannel channel = ServerSocketChannel.open();
+        channel = ServerSocketChannel.open();
         channel.bind(new InetSocketAddress("localhost", 7878));
+        channel.socket().setReuseAddress(true);
         channel.configureBlocking(false);
-        channel.register(selector, SelectionKey.OP_ACCEPT);//READ
+        channel.register(selector, SelectionKey.OP_ACCEPT);
         
-        while(true){
-            selector.select();
-            Set<SelectionKey> keys = selector.selectedKeys();
-            for (SelectionKey key : keys) {
-                if((key.readyOps() & SelectionKey.OP_ACCEPT) > 0){
-                    logger.debug("accept connection");
-                    ServerSocketChannel server = (ServerSocketChannel) key.channel();
-                    // 获得和客户端连接的通道
-                    SocketChannel sc = server.accept();
-                    // 设置成非阻塞
-                    sc.configureBlocking(false);
-                    // 在这里可以发送消息给客户端
-                    sc.write(ByteBuffer.wrap(new String("hello client").getBytes()));
-                    // 在客户端 连接成功之后，为了可以接收到客户端的信息，需要给通道设置读的权限
-                    sc.register(ZooServer.selector, SelectionKey.OP_READ);
-                } else if ((key.readyOps() & SelectionKey.OP_READ) > 0){
-                    logger.debug("reading from client");
-                    SocketChannel ch = (SocketChannel) key.channel();
-                    int len;
-                    StringBuilder sb = new StringBuilder();
-                    while((len = ch.read(buffer)) > 0){
-                        buffer.flip();//limit=position, position=0,为读做准备
-                        byte[] tmp = new byte[len];
-                        buffer.get(tmp);//position++ <= limit
-                        sb.append(new String(tmp));
-                        buffer.clear();//position置为0，并不清除buffer内容
+        while(!channel.socket().isClosed()){
+            try{
+                selector.select(TIMEOUT);
+                Set<SelectionKey> keys = selector.selectedKeys();
+                for (SelectionKey key : keys) {
+                    if((key.readyOps() & SelectionKey.OP_ACCEPT) > 0){
+                        ServerSocketChannel server = (ServerSocketChannel) key.channel();
+                        SocketChannel sc = server.accept();
+                        logger.info("Accepted socket connection from " + sc.socket().getRemoteSocketAddress());
+                        sc.configureBlocking(false);
+                        SelectionKey sk = sc.register(ZooServer.selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                        //attach
+                        NIOServerCnxn nioCnxn = new NIOServerCnxn(sc, sk);
+                        sk.attach(nioCnxn);
+                    } else if ((key.readyOps() & (SelectionKey.OP_READ | SelectionKey.OP_WRITE)) != 0){
+                        NIOServerCnxn nioCnxn = (NIOServerCnxn) key.attachment();
+                        nioCnxn.doIO(key);
+                    } else {
+                        logger.debug("Unexpected ops in keys " + key.readyOps());
                     }
-                    logger.debug(sb.toString());
                 }
+                keys.clear();
+            }catch (RuntimeException e) {
+                logger.warn("Ignoring unexpected runtime exception", e);
+            } catch (Exception e) {
+                logger.warn("Ignoring exception", e);
             }
-            keys.clear();
         }
+        
+        logger.debug("server is going to shutdown");
     }
 
 }
