@@ -53,7 +53,7 @@ public class ZooClient {
                     int c = sock.read(buffer);
                     if(c < 0){
                         //TODO 服务端断开
-                        logger.debug("loss connection to server.");
+                        logger.debug("loss connection to server : " + sock.getRemoteAddress());
                         key.cancel();
                         close();
                         return;
