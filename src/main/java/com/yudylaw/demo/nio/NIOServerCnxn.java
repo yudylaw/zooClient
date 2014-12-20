@@ -1,5 +1,9 @@
 package com.yudylaw.demo.nio;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.yudylaw.demo.nio.proto.Zoo.IQType;
+import com.yudylaw.demo.nio.proto.Zoo.Packet;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,18 +54,13 @@ public class NIOServerCnxn {
                     close();
                     return;
                 }
-                StringBuilder sb = new StringBuilder();
-                buffer.flip();//limit=position, position=0,为读做准备
-                byte[] tmp = new byte[c];
-                buffer.get(tmp);//position++ <= limit
-                sb.append(new String(tmp));
-                buffer.clear();//position置为0，并不清除buffer内容
-                logger.debug(sb.toString());
+                read(c);
                 sk.interestOps(sk.interestOps() | SelectionKey.OP_WRITE);
             } else if (k.isWritable()){
                 logger.debug("client is writable");
-                sock.write(ByteBuffer.wrap(new String("hello client").getBytes()));
+                sendPing();
                 //TODO 根据需要
+//                sk.interestOps(SelectionKey.OP_READ);
                 sk.interestOps(sk.interestOps() & (~SelectionKey.OP_WRITE));
             }
         } catch (IOException e) {
@@ -69,10 +68,29 @@ public class NIOServerCnxn {
         }
     }
     
-    public void write() throws IOException{
-        buffer = ByteBuffer.wrap(new String("hello client").getBytes());
-        while(buffer.hasRemaining()){
-            sock.write(buffer);
+    public void read(int len) throws InvalidProtocolBufferException{
+        if(len < 1){
+            logger.debug("read {} size packet", len);
+            return;
+        }
+        buffer.flip();//limit=position, position=0,为读做准备
+        byte[] tmp = new byte[len];
+        buffer.get(tmp);//position++ <= limit
+        Packet packet = Packet.parseFrom(tmp);                
+        buffer.clear();//position置为0，并不清除buffer内容
+        logger.debug("received packet is {}", packet);
+    }
+    
+    public void write(byte[] bytes) throws IOException{
+        sock.write(buffer);
+    }
+    
+    private void sendPing(){
+        Packet packet = Packet.newBuilder().setType(IQType.PING).build();
+        try {
+            write(packet.toByteArray());
+        } catch (IOException e) {
+            logger.debug("error while send ping", e);
         }
     }
     

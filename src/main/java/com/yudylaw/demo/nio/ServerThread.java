@@ -4,8 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
@@ -24,9 +22,9 @@ public class ServerThread extends Thread {
 
     private static Selector selector = null;
     private static ServerSocketChannel serverSocketChannel = null;
-    private final static int TIMEOUT = 1000;
+    private final static int TIMEOUT = 5000;
     private static int MAX_CONN;
-    private static volatile int conns = 0;
+    private static int conns = 0;
     private final HashSet<NIOServerCnxn> cnxns = new HashSet<NIOServerCnxn>();
     
     private final static Logger logger = LoggerFactory.getLogger(ServerThread.class);
@@ -51,6 +49,7 @@ public class ServerThread extends Thread {
     
     public ServerThread(SocketAddress addr, int maxConn) throws IOException{
         super("ServerThread:" + addr);
+        //TODO 守护线程的作用
         setDaemon(true);
         MAX_CONN = maxConn;
         selector = Selector.open();
@@ -65,17 +64,18 @@ public class ServerThread extends Thread {
         while(!serverSocketChannel.socket().isClosed()){
             try{
                 selector.select(TIMEOUT);
-                Set<SelectionKey> keys = selector.selectedKeys();
+                logger.debug("server selector.");
+                Set<SelectionKey> keys;
+                synchronized (this) {
+                    keys = selector.selectedKeys();
+                }
                 for (SelectionKey key : keys) {
                     if((key.readyOps() & SelectionKey.OP_ACCEPT) > 0){
                         ServerSocketChannel server = (ServerSocketChannel) key.channel();
                         SocketChannel sc = server.accept();
-                        InetAddress ia = sc.socket().getInetAddress();
-                        synchronized (ServerThread.class) {
-                            conns++;
-                        }
+                        conns = getCnxnCount();
                         if(conns > MAX_CONN){
-                            logger.warn("Too many connections from " + ia + " - max is " + MAX_CONN );
+                            logger.warn("Too many connections - max is " + MAX_CONN );
                             sc.close();
                             break;
                         }
@@ -83,10 +83,10 @@ public class ServerThread extends Thread {
                         sc.configureBlocking(false);
                         SelectionKey sk = sc.register(selector, SelectionKey.OP_READ);
                         //attach
-                        NIOServerCnxn nioCnxn = new NIOServerCnxn(sc, sk);
-                        sk.attach(nioCnxn);
-                        cnxns.add(nioCnxn);
-                    } else if ((key.readyOps() & (SelectionKey.OP_READ | SelectionKey.OP_WRITE)) != 0){
+                        NIOServerCnxn cnxn = new NIOServerCnxn(sc, sk);
+                        sk.attach(cnxn);
+                        addCnxn(cnxn);
+                    } else if ((key.readyOps() & (SelectionKey.OP_READ | SelectionKey.OP_WRITE)) > 0){
                         NIOServerCnxn nioCnxn = (NIOServerCnxn) key.attachment();
                         nioCnxn.doIO(key);
                     } else {
@@ -101,7 +101,19 @@ public class ServerThread extends Thread {
             }
         }
     }
-
+    
+    public void addCnxn(NIOServerCnxn cnxn){
+        synchronized (cnxns) {
+            cnxns.add(cnxn);
+        }
+    }
+    
+    public int getCnxnCount(){
+        synchronized (cnxns) {
+            return cnxns.size();
+        }
+    }
+    
     synchronized public void clear() {
         selector.wakeup();
         HashSet<NIOServerCnxn> cnxns;

@@ -1,0 +1,14 @@
+package com.yudylaw.demo.nio.proto;
+
+/////////////////Zoo protoc//////////////////////
+
+enum IQType
+{
+	PING = 0;
+}
+
+message Packet
+{
+	required IQType type   = 1;
+	optional bytes content = 2;
+}
