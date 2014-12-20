@@ -82,7 +82,7 @@ public class ServerThread extends Thread {
                         }
                         logger.info("Accepted socket connection from " + sc.socket().getRemoteSocketAddress());
                         sc.configureBlocking(false);
-                        SelectionKey sk = sc.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                        SelectionKey sk = sc.register(selector, SelectionKey.OP_READ);
                         //attach
                         NIOServerCnxn cnxn = new NIOServerCnxn(sc, sk);
                         sk.attach(cnxn);

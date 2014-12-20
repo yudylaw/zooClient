@@ -77,13 +77,7 @@ public class ClientThread extends Thread {
                             close();
                             return;
                         }
-                        while(c > -1){
-                            buffer.flip();//limit=position, position=0,为读做准备
-                            byte[] tmp = new byte[c];
-                            buffer.get(tmp);//position++ <= limit
-                            buffer.clear();
-                            c = sock.read(buffer);
-                        }
+                        read(c);
                         socketKey.interestOps(SelectionKey.OP_WRITE);
                     } else if ((key.readyOps() & SelectionKey.OP_WRITE) > 0) {
                         logger.debug("server is writable");
