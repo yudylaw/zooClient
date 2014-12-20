@@ -55,13 +55,13 @@ public class NIOServerCnxn {
                     return;
                 }
                 read(c);
-                sk.interestOps(sk.interestOps() | SelectionKey.OP_WRITE);
+//                sk.interestOps(sk.interestOps() | SelectionKey.OP_WRITE);
             } else if (k.isWritable()){
                 logger.debug("client is writable");
                 sendPing();
                 //TODO 根据需要
 //                sk.interestOps(SelectionKey.OP_READ);
-                sk.interestOps(sk.interestOps() & (~SelectionKey.OP_WRITE));
+//                sk.interestOps(sk.interestOps() & (~SelectionKey.OP_WRITE));
             }
         } catch (IOException e) {
             logger.debug("io exception", e);
@@ -70,6 +70,11 @@ public class NIOServerCnxn {
     
     public void read(int len) throws InvalidProtocolBufferException{
         if(len < 1){
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                logger.debug("sleep is iterrupted", e);
+            }
             logger.debug("read {} size packet", len);
             return;
         }
