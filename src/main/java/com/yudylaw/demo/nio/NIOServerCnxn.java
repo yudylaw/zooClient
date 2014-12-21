@@ -1,18 +1,17 @@
 package com.yudylaw.demo.nio;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.yudylaw.demo.nio.proto.Zoo.IQType;
-import com.yudylaw.demo.nio.proto.Zoo.Packet;
+import java.io.IOException;
+import java.net.SocketException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.SocketException;
-import java.nio.ByteBuffer;
-import java.nio.channels.CancelledKeyException;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.SocketChannel;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.yudylaw.demo.nio.proto.Zoo.IQType;
+import com.yudylaw.demo.nio.proto.Zoo.Packet;
 
 /**
  * @author liuyu3@xiaomi.com
@@ -23,7 +22,8 @@ public class NIOServerCnxn {
     
     private SocketChannel sock;
     private SelectionKey sk;
-    private static ByteBuffer buffer = ByteBuffer.allocate(1 * 1024);
+    private static ByteBuffer lenBuffer = ByteBuffer.allocate(4);
+    private static ByteBuffer incomingBuffer = lenBuffer;
     
     private final static Logger logger = LoggerFactory.getLogger(NIOServerCnxn.class);
     
@@ -46,7 +46,7 @@ public class NIOServerCnxn {
             }
             if (k.isReadable()) {
                 logger.debug("client is readable");
-                int c = sock.read(buffer);
+                int c = sock.read(incomingBuffer);
                 if(c < 0){
                     //TODO 客户端断开时会收到READ事件, 避免循环读
                     logger.debug("loss sock with " + sock.getRemoteAddress());
@@ -54,9 +54,21 @@ public class NIOServerCnxn {
                     close();
                     return;
                 }
-                read(c);
-                //TODO 订阅write事件
-                sk.interestOps(sk.interestOps() | SelectionKey.OP_WRITE);
+                //TODO
+                if (incomingBuffer.remaining() == 0) {
+                	boolean isPayload = false;
+                	if(incomingBuffer == lenBuffer){
+                		isPayload = readLength();
+                	}else{
+                		isPayload = true;
+                	}
+                	if(isPayload){
+                		readPayload(k);
+                        //TODO 订阅write事件
+                        sk.interestOps(sk.interestOps() | SelectionKey.OP_WRITE);
+                	}
+                }
+//                read(c);
             } else if (k.isWritable()){
                 logger.debug("client is writable");
                 sendPing();
@@ -69,16 +81,53 @@ public class NIOServerCnxn {
         }
     }
     
+    /** Read the request payload (everything following the length prefix) */
+    private void readPayload(SelectionKey k) throws IOException, InterruptedException {
+    	//TODO why not while?
+        if (incomingBuffer.remaining() != 0) {
+            int rc = sock.read(incomingBuffer);
+            if (rc < 0) {
+            	logger.debug("loss sock with " + sock.getRemoteAddress());
+                k.cancel();
+                close();
+                return;
+            }
+        }
+
+        if (incomingBuffer.remaining() == 0) {
+            incomingBuffer.flip();
+            //TODO
+            Packet packet = Packet.parseFrom(incomingBuffer.array());            
+            incomingBuffer.clear();//position置为0，并不清除buffer内容
+            logger.debug("received packet is {}", packet);
+            lenBuffer.clear();
+            //重置
+            incomingBuffer = lenBuffer;
+        }
+    }
+    
+    private boolean readLength() throws IOException {
+		incomingBuffer.flip();
+		int len = incomingBuffer.getInt();
+		if(len < 0 || len > Integer.MAX_VALUE){
+			throw new IOException("Len error " + len);
+		}
+		logger.info("read a packet len is {}", len);
+		incomingBuffer = ByteBuffer.allocate(len);
+		incomingBuffer.clear();
+		return true;
+    }
+    
     public void read(int len) throws InvalidProtocolBufferException{
         if(len < 1){
             logger.debug("read {} size packet", len);
             return;
         }
-        buffer.flip();//limit=position, position=0,为读做准备
+        incomingBuffer.flip();//limit=position, position=0,为读做准备
         byte[] tmp = new byte[len];
-        buffer.get(tmp);//position++ <= limit
+        incomingBuffer.get(tmp);//position++ <= limit
         Packet packet = Packet.parseFrom(tmp);                
-        buffer.clear();//position置为0，并不清除buffer内容
+        incomingBuffer.clear();//position置为0，并不清除buffer内容
         logger.debug("received packet is {}", packet);
     }
     

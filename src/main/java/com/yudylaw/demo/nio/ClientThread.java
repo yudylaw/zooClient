@@ -30,7 +30,7 @@ public class ClientThread extends Thread {
     private static SocketChannel channel = null;
     private final static LinkedList<Packet> outgoingQueue = new LinkedList<Packet>();
     private final static Logger logger = LoggerFactory.getLogger(ClientThread.class);
-    private final static int PING_TIME = 5000;//30s
+    private final static int PING_TIME = 10000;//30s
     
     public ClientThread(SocketAddress addr) throws IOException{
         selector = Selector.open();
@@ -111,9 +111,12 @@ public class ClientThread extends Thread {
      * @throws IOException
      */
     private void write(Packet packet) throws IOException{
-        ByteBuffer buf = ByteBuffer.allocate(1024);
-        buf.clear();
-        buf.put(packet.toByteArray());
+        int len = packet.toByteArray().length;
+        logger.debug("packet len is {}", len);
+        ByteBuffer buf = ByteBuffer.allocate(len + 4);
+        buf.putInt(len);//head is len, 4 bytes
+        buf.flip();
+        buf.put(packet.toByteArray());//after head is content
         buf.flip();
         //一次性无法保证写完，需要一直写，直到写结束
         while(buf.hasRemaining()) {
