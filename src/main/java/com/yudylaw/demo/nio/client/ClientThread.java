@@ -114,8 +114,7 @@ public class ClientThread extends Thread {
         int len = packet.toByteArray().length;
         logger.debug("packet len is {}", len);
         ByteBuffer buf = ByteBuffer.allocate(len + 4);
-        buf.putInt(len);//head is len, 4 bytes
-        buf.flip();
+        buf.putInt(len);//head is length, 4 bytes
         buf.put(packet.toByteArray());//after head is content
         buf.flip();
         //一次性无法保证写完，需要一直写，直到写结束
