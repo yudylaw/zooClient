@@ -1,4 +1,4 @@
-package com.yudylaw.demo.nio;
+package com.yudylaw.demo.nio.server;
 
 import java.io.IOException;
 import java.net.SocketException;

@@ -8,21 +8,32 @@
 		</layout>
 	</appender>
 
-	<appender name="file" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="/home/yudylaw/yudy/tmp/demo.log" />
-		<!-- 
-		<param name="Append" value="true" />
-		 -->
-		<param name="MaxFileSize" value="1024" />
+	<appender name="server" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="/home/yudylaw/yudy/tmp/server.log" />
+		<param name="MaxFileSize" value="1024MB" />
 		<param name="MaxBackupIndex" value="300" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="[%-5p %d{yyyy-MM-dd HH:mm:ss.SSS}] %l [%m]%n" />
 		</layout>
 	</appender>
 	
-	<logger name="com.yudylaw.demo.nio">
+	<appender name="client" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="/home/yudylaw/yudy/tmp/client.log" />
+		<param name="MaxFileSize" value="1024MB" />
+		<param name="MaxBackupIndex" value="300" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%-5p %d{yyyy-MM-dd HH:mm:ss.SSS}] %l [%m]%n" />
+		</layout>
+	</appender>
+	
+	<logger name="com.yudylaw.demo.nio.server">
 		<level value="debug" />
-		<appender-ref ref="file" />
+		<appender-ref ref="server" />
+	</logger>
+	
+	<logger name="com.yudylaw.demo.nio.client">
+		<level value="debug" />
+		<appender-ref ref="client" />
 	</logger>
 	
 	<root>

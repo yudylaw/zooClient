@@ -1,4 +1,4 @@
-package com.yudylaw.demo.nio;
+package com.yudylaw.demo.nio.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

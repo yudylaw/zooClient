@@ -1,4 +1,4 @@
-package com.yudylaw.demo.nio;
+package com.yudylaw.demo.nio.client;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.yudylaw.demo.nio.proto.Zoo.IQType;
