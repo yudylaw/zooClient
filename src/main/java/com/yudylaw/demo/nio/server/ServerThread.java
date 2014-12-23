@@ -53,9 +53,10 @@ public class ServerThread extends Thread {
         MAX_CONN = maxConn;
         selector = Selector.open();
         serverSocketChannel = ServerSocketChannel.open();
-        serverSocketChannel.bind(addr);
+        //只有TCP状态位于TIME_WAIT，才可以重用该端口，仅Linux下可用
         serverSocketChannel.socket().setReuseAddress(true);
         serverSocketChannel.configureBlocking(false);
+        serverSocketChannel.bind(addr);
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
     }
     

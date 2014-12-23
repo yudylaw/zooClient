@@ -37,7 +37,9 @@ public class ClientThread extends Thread {
         selector = Selector.open();
         channel = SocketChannel.open();
         channel.configureBlocking(false);
+        //禁用close逗留,默认如此
         channel.socket().setSoLinger(false, -1);
+        //禁用Negle算法，及时发送数据
         channel.socket().setTcpNoDelay(true);
         channel.connect(addr);//connect not open
         socketKey = channel.register(selector, SelectionKey.OP_CONNECT);
@@ -164,29 +166,29 @@ public class ClientThread extends Thread {
     
     public void close(){
         if (socketKey != null) {
-            SocketChannel sock = (SocketChannel) socketKey.channel();
-            logger.info("Closed socket connection " + sock.socket().getRemoteSocketAddress());
             socketKey.cancel();
-            try {
-                sock.socket().shutdownInput();
-            } catch (IOException e) {
-                logger.debug("Ignoring exception during shutdown input", e);
-            }
-            try {
-                sock.socket().shutdownOutput();
-            } catch (IOException e) {
-                logger.debug("Ignoring exception during shutdown output", e);
-            }
-            try {
-                sock.socket().close();
-            } catch (IOException e) {
-                logger.debug("Ignoring exception during socket close", e);
-            }
-            try {
-                sock.close();
-            } catch (IOException e) {
-                logger.debug("Ignoring exception during channel close", e);
-            }
+        }
+        SocketChannel sock = (SocketChannel) socketKey.channel();
+        logger.info("Closed socket connection " + sock.socket().getRemoteSocketAddress());
+        try {
+            sock.socket().shutdownInput();
+        } catch (IOException e) {
+            logger.debug("Ignoring exception during shutdown input", e);
+        }
+        try {
+            sock.socket().shutdownOutput();
+        } catch (IOException e) {
+            logger.debug("Ignoring exception during shutdown output", e);
+        }
+        try {
+            sock.socket().close();
+        } catch (IOException e) {
+            logger.debug("Ignoring exception during socket close", e);
+        }
+        try {
+            sock.close();
+        } catch (IOException e) {
+            logger.debug("Ignoring exception during channel close", e);
         }
         if(selector != null && selector.isOpen()){
             try {
