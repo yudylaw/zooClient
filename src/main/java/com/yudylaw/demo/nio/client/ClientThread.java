@@ -28,6 +28,7 @@ public class ClientThread extends Thread {
     private static ByteBuffer buffer = ByteBuffer.allocate(1 * 1024);
     private final static int TIMEOUT = 1000;
     private static SocketChannel channel = null;
+    private static SocketAddress localSocketAddr = null;
     private final static LinkedList<Packet> outgoingQueue = new LinkedList<Packet>();
     private final static Logger logger = LoggerFactory.getLogger(ClientThread.class);
     private final static int PING_TIME = 10000;//30s
@@ -64,10 +65,11 @@ public class ClientThread extends Thread {
                         if (channel.isConnectionPending()) {
                             channel.finishConnect();
                         }
+                        localSocketAddr = channel.getLocalAddress();
                         socketKey.interestOps(SelectionKey.OP_READ);
-                        logger.debug("connectted now");
+                        logger.debug("connectted to server, client is {}", localSocketAddr);
                     } else if ((key.readyOps() & SelectionKey.OP_READ) > 0) {
-                        logger.debug("reading from server");
+                        logger.debug("reading from server, client is {}", localSocketAddr);
                         SocketChannel sock = (SocketChannel) key.channel();
                         int c = sock.read(buffer);
                         if (c < 0) {
@@ -112,7 +114,7 @@ public class ClientThread extends Thread {
      */
     private void write(Packet packet) throws IOException{
         int len = packet.toByteArray().length;
-        logger.debug("packet len is {}", len);
+        logger.debug("{} write send a packet to server len is {}", new Object[]{localSocketAddr, len});
         ByteBuffer buf = ByteBuffer.allocate(len + 4);
         buf.putInt(len);//head is length, 4 bytes
         buf.put(packet.toByteArray());//after head is content
@@ -133,7 +135,7 @@ public class ClientThread extends Thread {
         buffer.get(tmp);//position++ <= limit
         Packet packet = Packet.parseFrom(tmp);                
         buffer.clear();//position置为0，并不清除buffer内容
-        logger.debug("received packet is {}", packet);
+        logger.debug("{} received packet is {}", new Object[]{localSocketAddr, packet});
     }
     
     private void enableWrite() {

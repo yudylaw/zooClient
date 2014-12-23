@@ -24,10 +24,13 @@ public class NIOServerCnxn {
     private SelectionKey sk;
     private static ByteBuffer lenBuffer = ByteBuffer.allocate(4);
     private static ByteBuffer incomingBuffer = lenBuffer;
+    private ServerThread server;
     
     private final static Logger logger = LoggerFactory.getLogger(NIOServerCnxn.class);
     
-    public NIOServerCnxn(SocketChannel sock, SelectionKey sk) throws SocketException {
+    public NIOServerCnxn(ServerThread server, SocketChannel sock, SelectionKey sk) throws SocketException {
+        //TODO 连接数管理
+        this.server = server;
         this.sock = sock;
         this.sk = sk;
         this.sock.socket().setTcpNoDelay(true);
@@ -45,7 +48,7 @@ public class NIOServerCnxn {
                 return;
             }
             if (k.isReadable()) {
-                logger.debug("client is readable");
+                logger.debug("client {} is readable", sock.getRemoteAddress());
                 int c = sock.read(incomingBuffer);
                 if(c < 0){
                     //TODO 客户端断开时会收到READ事件, 避免循环读
@@ -70,7 +73,7 @@ public class NIOServerCnxn {
                 }
 //                read(c);
             } else if (k.isWritable()){
-                logger.debug("client is writable");
+                logger.debug("client {} is writable", sock.getRemoteAddress());
                 sendPing();
                 //TODO 取消write，否则会一直write，也可以采用队列根据需要写
                 sk.interestOps(sk.interestOps() & (~SelectionKey.OP_WRITE));
@@ -99,7 +102,7 @@ public class NIOServerCnxn {
             //TODO
             Packet packet = Packet.parseFrom(incomingBuffer.array());            
             incomingBuffer.clear();//position置为0，并不清除buffer内容
-            logger.debug("received packet is {}", packet);
+            logger.debug("received a packet from {}, packet is {}", new Object[]{sock.getRemoteAddress(), packet});
             lenBuffer.clear();
             //重置
             incomingBuffer = lenBuffer;
@@ -118,6 +121,7 @@ public class NIOServerCnxn {
 		return true;
     }
     
+    @Deprecated
     public void read(int len) throws InvalidProtocolBufferException{
         if(len < 1){
             logger.debug("read {} size packet", len);
@@ -150,17 +154,17 @@ public class NIOServerCnxn {
     private void sendPing(){
         Packet packet = Packet.newBuilder().setType(IQType.PING).build();
         try {
-//        	sock.write(ByteBuffer.wrap(packet.toByteArray()));
             write(packet);
+            logger.debug("response a ping to client {}", sock.getRemoteAddress());
         } catch (IOException e) {
             logger.debug("error while send ping", e);
         }
     }
     
     public void close(){
-        
+        //TODO 连接管理
         closeSock();
-        
+        server.removeCnxn(this);
         if (sk != null) {
             try {
                 // need to cancel this selection key from the selector

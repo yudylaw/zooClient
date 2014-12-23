@@ -24,7 +24,6 @@ public class ServerThread extends Thread {
     private static ServerSocketChannel serverSocketChannel = null;
     private final static int TIMEOUT = 5000;
     private static int MAX_CONN;
-    private static int conns = 0;
     private final HashSet<NIOServerCnxn> cnxns = new HashSet<NIOServerCnxn>();
     
     private final static Logger logger = LoggerFactory.getLogger(ServerThread.class);
@@ -74,8 +73,8 @@ public class ServerThread extends Thread {
                     if((key.readyOps() & SelectionKey.OP_ACCEPT) > 0){
                         ServerSocketChannel server = (ServerSocketChannel) key.channel();
                         SocketChannel sc = server.accept();
-                        conns = getCnxnCount();
-                        if(conns > MAX_CONN){
+                        int conns = getCnxnCount();
+                        if(conns >= MAX_CONN){
                             logger.warn("Too many connections - max is " + MAX_CONN );
                             sc.close();
                             break;
@@ -84,7 +83,7 @@ public class ServerThread extends Thread {
                         sc.configureBlocking(false);
                         SelectionKey sk = sc.register(selector, SelectionKey.OP_READ);
                         //attach
-                        NIOServerCnxn cnxn = new NIOServerCnxn(sc, sk);
+                        NIOServerCnxn cnxn = new NIOServerCnxn(this, sc, sk);
                         sk.attach(cnxn);
                         addCnxn(cnxn);
                     } else if ((key.readyOps() & (SelectionKey.OP_READ | SelectionKey.OP_WRITE)) > 0){
@@ -100,6 +99,12 @@ public class ServerThread extends Thread {
             } catch (Exception e) {
                 logger.warn("Ignoring exception", e);
             }
+        }
+    }
+    
+    public void removeCnxn(NIOServerCnxn cnxn){
+        synchronized (cnxns) {
+            cnxns.remove(cnxn);
         }
     }
     
