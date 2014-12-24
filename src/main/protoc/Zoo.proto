@@ -4,7 +4,9 @@ package com.yudylaw.demo.nio.proto;
 
 enum IQType
 {
-	PING = 0;
+	PING 			 = 0;
+	WATCHES 			 = 1;
+	EVENT			 = 2;
 }
 
 message Packet
@@ -12,3 +14,26 @@ message Packet
 	required IQType type   = 1;
 	optional bytes content = 2;
 }
+
+enum EventType
+{
+    None					= 0;
+    NodeCreated				= 1;
+    NodeDeleted				= 2;
+    NodeDataChanged			= 3;
+    NodeChildrenChanged		= 4;
+}
+
+message WatcherEvent
+{
+	required EventType type   = 1;
+	required string path      = 2; 
+}
+
+message SetWatches
+{
+	required string host 		= 1;
+	repeated string dataWatches = 2;
+}
+
+

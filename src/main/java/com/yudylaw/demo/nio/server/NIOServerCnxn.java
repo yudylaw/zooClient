@@ -5,13 +5,16 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+import java.util.LinkedList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.yudylaw.demo.nio.proto.Zoo.EventType;
 import com.yudylaw.demo.nio.proto.Zoo.IQType;
 import com.yudylaw.demo.nio.proto.Zoo.Packet;
+import com.yudylaw.demo.nio.proto.Zoo.WatcherEvent;
 
 /**
  * @author liuyu3@xiaomi.com
@@ -22,6 +25,7 @@ public class NIOServerCnxn {
     
     private SocketChannel sock;
     private SelectionKey sk;
+    private final LinkedList<Packet> outgoingQueue = new LinkedList<Packet>();
     private static ByteBuffer lenBuffer = ByteBuffer.allocate(4);
     private static ByteBuffer incomingBuffer = lenBuffer;
     private ServerThread server;
@@ -38,7 +42,8 @@ public class NIOServerCnxn {
         this.sock.socket().setSoLinger(true, 2);
         //重用
         this.sock.socket().setReuseAddress(true);
-//        this.sk.interestOps(SelectionKey.OP_READ);
+        //TODO mock event
+        mockEvent();
     }
     
     public void doIO(SelectionKey k) throws InterruptedException {
@@ -51,7 +56,7 @@ public class NIOServerCnxn {
                 logger.debug("client {} is readable", sock.getRemoteAddress());
                 int c = sock.read(incomingBuffer);
                 if(c < 0){
-                    //TODO 客户端断开时会收到READ事件, 避免循环读
+                    //客户端断开时会收到READ事件, 避免循环读
                     logger.debug("loss sock with " + sock.getRemoteAddress());
                     k.cancel();
                     close();
@@ -68,15 +73,25 @@ public class NIOServerCnxn {
                 	if(isPayload){
                 		readPayload(k);
                         //TODO 订阅write事件
-                        sk.interestOps(sk.interestOps() | SelectionKey.OP_WRITE);
+//                        sk.interestOps(sk.interestOps() | SelectionKey.OP_WRITE);
                 	}
                 }
 //                read(c);
             } else if (k.isWritable()){
                 logger.debug("client {} is writable", sock.getRemoteAddress());
-                sendPing();
+                if(outgoingQueue.size() > 0){
+                    Packet packet = outgoingQueue.poll();
+                    if(packet != null){
+                        write(packet);
+                    }
+                }
                 //TODO 取消write，否则会一直write，也可以采用队列根据需要写
-                sk.interestOps(sk.interestOps() & (~SelectionKey.OP_WRITE));
+//                sk.interestOps(sk.interestOps() & (~SelectionKey.OP_WRITE));
+            }
+            if (outgoingQueue.size() > 0) {
+                enableWrite();
+            } else {
+                disableWrite();
             }
         } catch (IOException e) {
             logger.debug("io exception", e);
@@ -151,10 +166,33 @@ public class NIOServerCnxn {
         }
     }
     
+    private void enableWrite() {
+        int i = sk.interestOps();
+        if ((i & SelectionKey.OP_WRITE) == 0) {
+            sk.interestOps(i | SelectionKey.OP_WRITE);
+        }
+    }
+
+    private void disableWrite() {
+        int i = sk.interestOps();
+        if ((i & SelectionKey.OP_WRITE) != 0) {
+            sk.interestOps(i & (~SelectionKey.OP_WRITE));
+        }
+    }
+    
+    /**
+     * TODO
+     */
+    private void mockEvent(){
+        WatcherEvent event = WatcherEvent.newBuilder().setType(EventType.NodeCreated).setPath("/root/test").build();
+        Packet packet = Packet.newBuilder().setType(IQType.EVENT).setContent(event.toByteString()).build();
+        outgoingQueue.add(packet);
+    }
+    
     private void sendPing(){
         Packet packet = Packet.newBuilder().setType(IQType.PING).build();
         try {
-            write(packet);
+            outgoingQueue.add(packet);
             logger.debug("response a ping to client {}", sock.getRemoteAddress());
         } catch (IOException e) {
             logger.debug("error while send ping", e);

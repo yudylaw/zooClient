@@ -12,14 +12,13 @@ import java.net.InetSocketAddress;
 
 public class ZooClient {
     private final static Logger logger = LoggerFactory.getLogger(ZooClient.class);
-    private static ClientThread thread;
+    private static ClientCnxn clientCnxn;
     
     public static void main(String[] args){
         InetSocketAddress addr = new InetSocketAddress("localhost", 7878);
         try {
-            thread = new ClientThread(addr);
-            thread.start();
-            thread.join();
+            clientCnxn = new ClientCnxn(addr);
+            clientCnxn.start();
         } catch (Exception e) {
             logger.error("error to start client thread", e);
         }
@@ -29,7 +28,7 @@ public class ZooClient {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             
             public void run() {
-                thread.close();
+                clientCnxn.close();
             }
         });
     }
