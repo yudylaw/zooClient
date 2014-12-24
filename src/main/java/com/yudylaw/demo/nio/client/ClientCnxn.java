@@ -4,6 +4,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.yudylaw.demo.nio.proto.Zoo.IQType;
 import com.yudylaw.demo.nio.proto.Zoo.Packet;
 import com.yudylaw.demo.nio.proto.Zoo.WatcherEvent;
+import com.yudylaw.demo.nio.server.Watcher;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +26,9 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 
 public class ClientCnxn {
-    
     private final static Logger logger = LoggerFactory.getLogger(ClientCnxn.class);
-    
+    private ZooClient zooClient;
+    private Watcher watcher;
     private volatile boolean connected = false;
     
     /**
@@ -37,8 +38,9 @@ public class ClientCnxn {
     private EventThread eventThread;
     private SendThread sendThread;
     
-    
-    public ClientCnxn(SocketAddress addr) throws IOException {
+    public ClientCnxn(SocketAddress addr, ZooClient zooClient, Watcher watcher) throws IOException {
+        this.zooClient = zooClient;
+        this.watcher = watcher;
         this.eventThread = new EventThread();
         this.sendThread = new SendThread(addr);
     }
@@ -87,7 +89,7 @@ public class ClientCnxn {
         
         private void processEvent(Object event) {
             if(event instanceof WatcherEvent){
-                logger.debug("process event {}", event);
+                watcher.process((WatcherEvent)event);
                 //watcher.process(pair.event);
             }
         }

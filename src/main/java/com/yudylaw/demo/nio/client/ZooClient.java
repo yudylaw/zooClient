@@ -1,5 +1,7 @@
 package com.yudylaw.demo.nio.client;
 
+import com.yudylaw.demo.nio.server.Watcher;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,19 +14,20 @@ import java.net.InetSocketAddress;
 
 public class ZooClient {
     private final static Logger logger = LoggerFactory.getLogger(ZooClient.class);
-    private static ClientCnxn clientCnxn;
+    private ClientCnxn clientCnxn;
     
-    public static void main(String[] args){
-        InetSocketAddress addr = new InetSocketAddress("localhost", 7878);
+    public ZooClient(String host, int port, Watcher watcher){
+        InetSocketAddress addr = new InetSocketAddress(host, port);
         try {
-            clientCnxn = new ClientCnxn(addr);
+            addShutdownHook();
+            clientCnxn = new ClientCnxn(addr, this, watcher);
             clientCnxn.start();
         } catch (Exception e) {
             logger.error("error to start client thread", e);
         }
     }
     
-    public static void addShutdownHook(){
+    public void addShutdownHook(){
         Runtime.getRuntime().addShutdownHook(new Thread() {
             
             public void run() {
