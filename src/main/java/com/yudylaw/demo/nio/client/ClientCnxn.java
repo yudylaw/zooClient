@@ -48,8 +48,6 @@ public class ClientCnxn {
     public void start() throws InterruptedException{
         this.eventThread.start();
         this.sendThread.start();
-        //TODO
-        Thread.currentThread().join();
     }
     
     final static UncaughtExceptionHandler uncaughtExceptionHandler = new UncaughtExceptionHandler() {
@@ -59,7 +57,7 @@ public class ClientCnxn {
     };
     
     class EventThread extends Thread {
-        
+        private volatile boolean running = true;
         private final LinkedBlockingQueue<Object> waitingEvents =
                 new LinkedBlockingQueue<Object>();
 
@@ -77,7 +75,7 @@ public class ClientCnxn {
         
         @Override
         public void run() {
-            while(connected){
+            while(running){
                 try {
                     WatcherEvent event = (WatcherEvent) waitingEvents.take();
                     processEvent(event);
@@ -85,6 +83,10 @@ public class ClientCnxn {
                     logger.error("error is ", e);
                 }
             }
+        }
+        
+        public void close(){
+            running = false;
         }
         
         private void processEvent(Object event) {
@@ -295,6 +297,7 @@ public class ClientCnxn {
 
     public void close() {
         sendThread.close();
+        eventThread.close();
     }
     
 }

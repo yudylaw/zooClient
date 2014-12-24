@@ -33,7 +33,6 @@ public class NIOServerCnxn {
     private final static Logger logger = LoggerFactory.getLogger(NIOServerCnxn.class);
     
     public NIOServerCnxn(ServerThread server, SocketChannel sock, SelectionKey sk) throws SocketException {
-        //TODO 连接数管理
         this.server = server;
         this.sock = sock;
         this.sk = sk;
@@ -72,11 +71,8 @@ public class NIOServerCnxn {
                 	}
                 	if(isPayload){
                 		readPayload(k);
-                        //TODO 订阅write事件
-//                        sk.interestOps(sk.interestOps() | SelectionKey.OP_WRITE);
                 	}
                 }
-//                read(c);
             } else if (k.isWritable()){
                 logger.debug("client {} is writable", sock.getRemoteAddress());
                 if(outgoingQueue.size() > 0){
@@ -85,8 +81,6 @@ public class NIOServerCnxn {
                         write(packet);
                     }
                 }
-                //TODO 取消write，否则会一直write，也可以采用队列根据需要写
-//                sk.interestOps(sk.interestOps() & (~SelectionKey.OP_WRITE));
             }
             if (outgoingQueue.size() > 0) {
                 enableWrite();
@@ -200,7 +194,6 @@ public class NIOServerCnxn {
     }
     
     public void close(){
-        //TODO 连接管理
         closeSock();
         server.removeCnxn(this);
         if (sk != null) {
