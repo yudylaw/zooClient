@@ -25,6 +25,14 @@ public class TestClient {
         });
         
         try {
+            client.create("/node", new byte[1]);
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        }
+        
+        logger.debug("create node sucessful");
+        
+        try {
             Thread.currentThread().join();
         } catch (InterruptedException e) {
             e.printStackTrace();

@@ -25,6 +25,18 @@ public final class Zoo {
      * <code>EVENT = 2;</code>
      */
     EVENT(2, 2),
+    /**
+     * <code>REQUEST = 3;</code>
+     */
+    REQUEST(3, 3),
+    /**
+     * <code>RESPONSE = 4;</code>
+     */
+    RESPONSE(4, 4),
+    /**
+     * <code>ERROR = 5;</code>
+     */
+    ERROR(5, 5),
     ;
 
     /**
@@ -39,6 +51,18 @@ public final class Zoo {
      * <code>EVENT = 2;</code>
      */
     public static final int EVENT_VALUE = 2;
+    /**
+     * <code>REQUEST = 3;</code>
+     */
+    public static final int REQUEST_VALUE = 3;
+    /**
+     * <code>RESPONSE = 4;</code>
+     */
+    public static final int RESPONSE_VALUE = 4;
+    /**
+     * <code>ERROR = 5;</code>
+     */
+    public static final int ERROR_VALUE = 5;
 
 
     public final int getNumber() { return value; }
@@ -48,6 +72,9 @@ public final class Zoo {
         case 0: return PING;
         case 1: return WATCHES;
         case 2: return EVENT;
+        case 3: return REQUEST;
+        case 4: return RESPONSE;
+        case 5: return ERROR;
         default: return null;
       }
     }
@@ -206,6 +233,106 @@ public final class Zoo {
     }
 
     // @@protoc_insertion_point(enum_scope:com.yudylaw.demo.nio.proto.EventType)
+  }
+
+  /**
+   * Protobuf enum {@code com.yudylaw.demo.nio.proto.OpType}
+   */
+  public enum OpType
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>CREATE = 1;</code>
+     */
+    CREATE(0, 1),
+    /**
+     * <code>DELETE = 2;</code>
+     */
+    DELETE(1, 2),
+    /**
+     * <code>UPDATE = 3;</code>
+     */
+    UPDATE(2, 3),
+    /**
+     * <code>GET = 4;</code>
+     */
+    GET(3, 4),
+    ;
+
+    /**
+     * <code>CREATE = 1;</code>
+     */
+    public static final int CREATE_VALUE = 1;
+    /**
+     * <code>DELETE = 2;</code>
+     */
+    public static final int DELETE_VALUE = 2;
+    /**
+     * <code>UPDATE = 3;</code>
+     */
+    public static final int UPDATE_VALUE = 3;
+    /**
+     * <code>GET = 4;</code>
+     */
+    public static final int GET_VALUE = 4;
+
+
+    public final int getNumber() { return value; }
+
+    public static OpType valueOf(int value) {
+      switch (value) {
+        case 1: return CREATE;
+        case 2: return DELETE;
+        case 3: return UPDATE;
+        case 4: return GET;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<OpType>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static com.google.protobuf.Internal.EnumLiteMap<OpType>
+        internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<OpType>() {
+            public OpType findValueByNumber(int number) {
+              return OpType.valueOf(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(index);
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return com.yudylaw.demo.nio.proto.Zoo.getDescriptor().getEnumTypes().get(2);
+    }
+
+    private static final OpType[] VALUES = values();
+
+    public static OpType valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int index;
+    private final int value;
+
+    private OpType(int index, int value) {
+      this.index = index;
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:com.yudylaw.demo.nio.proto.OpType)
   }
 
   public interface PacketOrBuilder
@@ -1285,40 +1412,20 @@ public final class Zoo {
   public interface SetWatchesOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // required string host = 1;
+    // required string path = 1;
     /**
-     * <code>required string host = 1;</code>
+     * <code>required string path = 1;</code>
      */
-    boolean hasHost();
+    boolean hasPath();
     /**
-     * <code>required string host = 1;</code>
+     * <code>required string path = 1;</code>
      */
-    java.lang.String getHost();
+    java.lang.String getPath();
     /**
-     * <code>required string host = 1;</code>
-     */
-    com.google.protobuf.ByteString
-        getHostBytes();
-
-    // repeated string dataWatches = 2;
-    /**
-     * <code>repeated string dataWatches = 2;</code>
-     */
-    java.util.List<java.lang.String>
-    getDataWatchesList();
-    /**
-     * <code>repeated string dataWatches = 2;</code>
-     */
-    int getDataWatchesCount();
-    /**
-     * <code>repeated string dataWatches = 2;</code>
-     */
-    java.lang.String getDataWatches(int index);
-    /**
-     * <code>repeated string dataWatches = 2;</code>
+     * <code>required string path = 1;</code>
      */
     com.google.protobuf.ByteString
-        getDataWatchesBytes(int index);
+        getPathBytes();
   }
   /**
    * Protobuf type {@code com.yudylaw.demo.nio.proto.SetWatches}
@@ -1373,15 +1480,7 @@ public final class Zoo {
             }
             case 10: {
               bitField0_ |= 0x00000001;
-              host_ = input.readBytes();
-              break;
-            }
-            case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-                dataWatches_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000002;
-              }
-              dataWatches_.add(input.readBytes());
+              path_ = input.readBytes();
               break;
             }
           }
@@ -1392,9 +1491,6 @@ public final class Zoo {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-          dataWatches_ = new com.google.protobuf.UnmodifiableLazyStringList(dataWatches_);
-        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
@@ -1427,20 +1523,20 @@ public final class Zoo {
     }
 
     private int bitField0_;
-    // required string host = 1;
-    public static final int HOST_FIELD_NUMBER = 1;
-    private java.lang.Object host_;
+    // required string path = 1;
+    public static final int PATH_FIELD_NUMBER = 1;
+    private java.lang.Object path_;
     /**
-     * <code>required string host = 1;</code>
+     * <code>required string path = 1;</code>
      */
-    public boolean hasHost() {
+    public boolean hasPath() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required string host = 1;</code>
+     * <code>required string path = 1;</code>
      */
-    public java.lang.String getHost() {
-      java.lang.Object ref = host_;
+    public java.lang.String getPath() {
+      java.lang.Object ref = path_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -1448,68 +1544,37 @@ public final class Zoo {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          host_ = s;
+          path_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>required string host = 1;</code>
+     * <code>required string path = 1;</code>
      */
     public com.google.protobuf.ByteString
-        getHostBytes() {
-      java.lang.Object ref = host_;
+        getPathBytes() {
+      java.lang.Object ref = path_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        host_ = b;
+        path_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
 
-    // repeated string dataWatches = 2;
-    public static final int DATAWATCHES_FIELD_NUMBER = 2;
-    private com.google.protobuf.LazyStringList dataWatches_;
-    /**
-     * <code>repeated string dataWatches = 2;</code>
-     */
-    public java.util.List<java.lang.String>
-        getDataWatchesList() {
-      return dataWatches_;
-    }
-    /**
-     * <code>repeated string dataWatches = 2;</code>
-     */
-    public int getDataWatchesCount() {
-      return dataWatches_.size();
-    }
-    /**
-     * <code>repeated string dataWatches = 2;</code>
-     */
-    public java.lang.String getDataWatches(int index) {
-      return dataWatches_.get(index);
-    }
-    /**
-     * <code>repeated string dataWatches = 2;</code>
-     */
-    public com.google.protobuf.ByteString
-        getDataWatchesBytes(int index) {
-      return dataWatches_.getByteString(index);
-    }
-
     private void initFields() {
-      host_ = "";
-      dataWatches_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      path_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
 
-      if (!hasHost()) {
+      if (!hasPath()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -1521,10 +1586,7 @@ public final class Zoo {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getHostBytes());
-      }
-      for (int i = 0; i < dataWatches_.size(); i++) {
-        output.writeBytes(2, dataWatches_.getByteString(i));
+        output.writeBytes(1, getPathBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -1537,16 +1599,7 @@ public final class Zoo {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getHostBytes());
-      }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < dataWatches_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeBytesSizeNoTag(dataWatches_.getByteString(i));
-        }
-        size += dataSize;
-        size += 1 * getDataWatchesList().size();
+          .computeBytesSize(1, getPathBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1664,10 +1717,8 @@ public final class Zoo {
 
       public Builder clear() {
         super.clear();
-        host_ = "";
+        path_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
-        dataWatches_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -1699,13 +1750,7 @@ public final class Zoo {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.host_ = host_;
-        if (((bitField0_ & 0x00000002) == 0x00000002)) {
-          dataWatches_ = new com.google.protobuf.UnmodifiableLazyStringList(
-              dataWatches_);
-          bitField0_ = (bitField0_ & ~0x00000002);
-        }
-        result.dataWatches_ = dataWatches_;
+        result.path_ = path_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1722,19 +1767,9 @@ public final class Zoo {
 
       public Builder mergeFrom(com.yudylaw.demo.nio.proto.Zoo.SetWatches other) {
         if (other == com.yudylaw.demo.nio.proto.Zoo.SetWatches.getDefaultInstance()) return this;
-        if (other.hasHost()) {
+        if (other.hasPath()) {
           bitField0_ |= 0x00000001;
-          host_ = other.host_;
-          onChanged();
-        }
-        if (!other.dataWatches_.isEmpty()) {
-          if (dataWatches_.isEmpty()) {
-            dataWatches_ = other.dataWatches_;
-            bitField0_ = (bitField0_ & ~0x00000002);
-          } else {
-            ensureDataWatchesIsMutable();
-            dataWatches_.addAll(other.dataWatches_);
-          }
+          path_ = other.path_;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -1742,7 +1777,7 @@ public final class Zoo {
       }
 
       public final boolean isInitialized() {
-        if (!hasHost()) {
+        if (!hasPath()) {
           
           return false;
         }
@@ -1768,169 +1803,76 @@ public final class Zoo {
       }
       private int bitField0_;
 
-      // required string host = 1;
-      private java.lang.Object host_ = "";
+      // required string path = 1;
+      private java.lang.Object path_ = "";
       /**
-       * <code>required string host = 1;</code>
+       * <code>required string path = 1;</code>
        */
-      public boolean hasHost() {
+      public boolean hasPath() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required string host = 1;</code>
+       * <code>required string path = 1;</code>
        */
-      public java.lang.String getHost() {
-        java.lang.Object ref = host_;
+      public java.lang.String getPath() {
+        java.lang.Object ref = path_;
         if (!(ref instanceof java.lang.String)) {
           java.lang.String s = ((com.google.protobuf.ByteString) ref)
               .toStringUtf8();
-          host_ = s;
+          path_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>required string host = 1;</code>
+       * <code>required string path = 1;</code>
        */
       public com.google.protobuf.ByteString
-          getHostBytes() {
-        java.lang.Object ref = host_;
+          getPathBytes() {
+        java.lang.Object ref = path_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          host_ = b;
+          path_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>required string host = 1;</code>
+       * <code>required string path = 1;</code>
        */
-      public Builder setHost(
+      public Builder setPath(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000001;
-        host_ = value;
+        path_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required string host = 1;</code>
+       * <code>required string path = 1;</code>
        */
-      public Builder clearHost() {
+      public Builder clearPath() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        host_ = getDefaultInstance().getHost();
+        path_ = getDefaultInstance().getPath();
         onChanged();
         return this;
       }
       /**
-       * <code>required string host = 1;</code>
+       * <code>required string path = 1;</code>
        */
-      public Builder setHostBytes(
+      public Builder setPathBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000001;
-        host_ = value;
-        onChanged();
-        return this;
-      }
-
-      // repeated string dataWatches = 2;
-      private com.google.protobuf.LazyStringList dataWatches_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      private void ensureDataWatchesIsMutable() {
-        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-          dataWatches_ = new com.google.protobuf.LazyStringArrayList(dataWatches_);
-          bitField0_ |= 0x00000002;
-         }
-      }
-      /**
-       * <code>repeated string dataWatches = 2;</code>
-       */
-      public java.util.List<java.lang.String>
-          getDataWatchesList() {
-        return java.util.Collections.unmodifiableList(dataWatches_);
-      }
-      /**
-       * <code>repeated string dataWatches = 2;</code>
-       */
-      public int getDataWatchesCount() {
-        return dataWatches_.size();
-      }
-      /**
-       * <code>repeated string dataWatches = 2;</code>
-       */
-      public java.lang.String getDataWatches(int index) {
-        return dataWatches_.get(index);
-      }
-      /**
-       * <code>repeated string dataWatches = 2;</code>
-       */
-      public com.google.protobuf.ByteString
-          getDataWatchesBytes(int index) {
-        return dataWatches_.getByteString(index);
-      }
-      /**
-       * <code>repeated string dataWatches = 2;</code>
-       */
-      public Builder setDataWatches(
-          int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureDataWatchesIsMutable();
-        dataWatches_.set(index, value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string dataWatches = 2;</code>
-       */
-      public Builder addDataWatches(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureDataWatchesIsMutable();
-        dataWatches_.add(value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string dataWatches = 2;</code>
-       */
-      public Builder addAllDataWatches(
-          java.lang.Iterable<java.lang.String> values) {
-        ensureDataWatchesIsMutable();
-        super.addAll(values, dataWatches_);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string dataWatches = 2;</code>
-       */
-      public Builder clearDataWatches() {
-        dataWatches_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string dataWatches = 2;</code>
-       */
-      public Builder addDataWatchesBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureDataWatchesIsMutable();
-        dataWatches_.add(value);
+        path_ = value;
         onChanged();
         return this;
       }
@@ -1944,6 +1886,1807 @@ public final class Zoo {
     }
 
     // @@protoc_insertion_point(class_scope:com.yudylaw.demo.nio.proto.SetWatches)
+  }
+
+  public interface RequestOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required string path = 1;
+    /**
+     * <code>required string path = 1;</code>
+     */
+    boolean hasPath();
+    /**
+     * <code>required string path = 1;</code>
+     */
+    java.lang.String getPath();
+    /**
+     * <code>required string path = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getPathBytes();
+
+    // required .com.yudylaw.demo.nio.proto.OpType type = 2;
+    /**
+     * <code>required .com.yudylaw.demo.nio.proto.OpType type = 2;</code>
+     */
+    boolean hasType();
+    /**
+     * <code>required .com.yudylaw.demo.nio.proto.OpType type = 2;</code>
+     */
+    com.yudylaw.demo.nio.proto.Zoo.OpType getType();
+
+    // optional bytes data = 3;
+    /**
+     * <code>optional bytes data = 3;</code>
+     */
+    boolean hasData();
+    /**
+     * <code>optional bytes data = 3;</code>
+     */
+    com.google.protobuf.ByteString getData();
+  }
+  /**
+   * Protobuf type {@code com.yudylaw.demo.nio.proto.Request}
+   */
+  public static final class Request extends
+      com.google.protobuf.GeneratedMessage
+      implements RequestOrBuilder {
+    // Use Request.newBuilder() to construct.
+    private Request(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private Request(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final Request defaultInstance;
+    public static Request getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public Request getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Request(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              path_ = input.readBytes();
+              break;
+            }
+            case 16: {
+              int rawValue = input.readEnum();
+              com.yudylaw.demo.nio.proto.Zoo.OpType value = com.yudylaw.demo.nio.proto.Zoo.OpType.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(2, rawValue);
+              } else {
+                bitField0_ |= 0x00000002;
+                type_ = value;
+              }
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              data_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.yudylaw.demo.nio.proto.Zoo.internal_static_com_yudylaw_demo_nio_proto_Request_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.yudylaw.demo.nio.proto.Zoo.internal_static_com_yudylaw_demo_nio_proto_Request_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.yudylaw.demo.nio.proto.Zoo.Request.class, com.yudylaw.demo.nio.proto.Zoo.Request.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<Request> PARSER =
+        new com.google.protobuf.AbstractParser<Request>() {
+      public Request parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Request(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Request> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string path = 1;
+    public static final int PATH_FIELD_NUMBER = 1;
+    private java.lang.Object path_;
+    /**
+     * <code>required string path = 1;</code>
+     */
+    public boolean hasPath() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string path = 1;</code>
+     */
+    public java.lang.String getPath() {
+      java.lang.Object ref = path_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          path_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string path = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getPathBytes() {
+      java.lang.Object ref = path_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        path_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required .com.yudylaw.demo.nio.proto.OpType type = 2;
+    public static final int TYPE_FIELD_NUMBER = 2;
+    private com.yudylaw.demo.nio.proto.Zoo.OpType type_;
+    /**
+     * <code>required .com.yudylaw.demo.nio.proto.OpType type = 2;</code>
+     */
+    public boolean hasType() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required .com.yudylaw.demo.nio.proto.OpType type = 2;</code>
+     */
+    public com.yudylaw.demo.nio.proto.Zoo.OpType getType() {
+      return type_;
+    }
+
+    // optional bytes data = 3;
+    public static final int DATA_FIELD_NUMBER = 3;
+    private com.google.protobuf.ByteString data_;
+    /**
+     * <code>optional bytes data = 3;</code>
+     */
+    public boolean hasData() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional bytes data = 3;</code>
+     */
+    public com.google.protobuf.ByteString getData() {
+      return data_;
+    }
+
+    private void initFields() {
+      path_ = "";
+      type_ = com.yudylaw.demo.nio.proto.Zoo.OpType.CREATE;
+      data_ = com.google.protobuf.ByteString.EMPTY;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasPath()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasType()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getPathBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeEnum(2, type_.getNumber());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, data_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getPathBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(2, type_.getNumber());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, data_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.yudylaw.demo.nio.proto.Zoo.Request parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.Request parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.Request parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.Request parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.Request parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.Request parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.Request parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.Request parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.Request parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.Request parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.yudylaw.demo.nio.proto.Zoo.Request prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code com.yudylaw.demo.nio.proto.Request}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements com.yudylaw.demo.nio.proto.Zoo.RequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.yudylaw.demo.nio.proto.Zoo.internal_static_com_yudylaw_demo_nio_proto_Request_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.yudylaw.demo.nio.proto.Zoo.internal_static_com_yudylaw_demo_nio_proto_Request_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.yudylaw.demo.nio.proto.Zoo.Request.class, com.yudylaw.demo.nio.proto.Zoo.Request.Builder.class);
+      }
+
+      // Construct using com.yudylaw.demo.nio.proto.Zoo.Request.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        path_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        type_ = com.yudylaw.demo.nio.proto.Zoo.OpType.CREATE;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        data_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.yudylaw.demo.nio.proto.Zoo.internal_static_com_yudylaw_demo_nio_proto_Request_descriptor;
+      }
+
+      public com.yudylaw.demo.nio.proto.Zoo.Request getDefaultInstanceForType() {
+        return com.yudylaw.demo.nio.proto.Zoo.Request.getDefaultInstance();
+      }
+
+      public com.yudylaw.demo.nio.proto.Zoo.Request build() {
+        com.yudylaw.demo.nio.proto.Zoo.Request result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.yudylaw.demo.nio.proto.Zoo.Request buildPartial() {
+        com.yudylaw.demo.nio.proto.Zoo.Request result = new com.yudylaw.demo.nio.proto.Zoo.Request(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.path_ = path_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.type_ = type_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.data_ = data_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.yudylaw.demo.nio.proto.Zoo.Request) {
+          return mergeFrom((com.yudylaw.demo.nio.proto.Zoo.Request)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.yudylaw.demo.nio.proto.Zoo.Request other) {
+        if (other == com.yudylaw.demo.nio.proto.Zoo.Request.getDefaultInstance()) return this;
+        if (other.hasPath()) {
+          bitField0_ |= 0x00000001;
+          path_ = other.path_;
+          onChanged();
+        }
+        if (other.hasType()) {
+          setType(other.getType());
+        }
+        if (other.hasData()) {
+          setData(other.getData());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasPath()) {
+          
+          return false;
+        }
+        if (!hasType()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.yudylaw.demo.nio.proto.Zoo.Request parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.yudylaw.demo.nio.proto.Zoo.Request) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string path = 1;
+      private java.lang.Object path_ = "";
+      /**
+       * <code>required string path = 1;</code>
+       */
+      public boolean hasPath() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string path = 1;</code>
+       */
+      public java.lang.String getPath() {
+        java.lang.Object ref = path_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          path_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string path = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getPathBytes() {
+        java.lang.Object ref = path_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          path_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string path = 1;</code>
+       */
+      public Builder setPath(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        path_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string path = 1;</code>
+       */
+      public Builder clearPath() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        path_ = getDefaultInstance().getPath();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string path = 1;</code>
+       */
+      public Builder setPathBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        path_ = value;
+        onChanged();
+        return this;
+      }
+
+      // required .com.yudylaw.demo.nio.proto.OpType type = 2;
+      private com.yudylaw.demo.nio.proto.Zoo.OpType type_ = com.yudylaw.demo.nio.proto.Zoo.OpType.CREATE;
+      /**
+       * <code>required .com.yudylaw.demo.nio.proto.OpType type = 2;</code>
+       */
+      public boolean hasType() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required .com.yudylaw.demo.nio.proto.OpType type = 2;</code>
+       */
+      public com.yudylaw.demo.nio.proto.Zoo.OpType getType() {
+        return type_;
+      }
+      /**
+       * <code>required .com.yudylaw.demo.nio.proto.OpType type = 2;</code>
+       */
+      public Builder setType(com.yudylaw.demo.nio.proto.Zoo.OpType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000002;
+        type_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required .com.yudylaw.demo.nio.proto.OpType type = 2;</code>
+       */
+      public Builder clearType() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        type_ = com.yudylaw.demo.nio.proto.Zoo.OpType.CREATE;
+        onChanged();
+        return this;
+      }
+
+      // optional bytes data = 3;
+      private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes data = 3;</code>
+       */
+      public boolean hasData() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional bytes data = 3;</code>
+       */
+      public com.google.protobuf.ByteString getData() {
+        return data_;
+      }
+      /**
+       * <code>optional bytes data = 3;</code>
+       */
+      public Builder setData(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        data_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bytes data = 3;</code>
+       */
+      public Builder clearData() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        data_ = getDefaultInstance().getData();
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:com.yudylaw.demo.nio.proto.Request)
+    }
+
+    static {
+      defaultInstance = new Request(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:com.yudylaw.demo.nio.proto.Request)
+  }
+
+  public interface ResponseOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required string path = 1;
+    /**
+     * <code>required string path = 1;</code>
+     */
+    boolean hasPath();
+    /**
+     * <code>required string path = 1;</code>
+     */
+    java.lang.String getPath();
+    /**
+     * <code>required string path = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getPathBytes();
+
+    // required .com.yudylaw.demo.nio.proto.OpType type = 2;
+    /**
+     * <code>required .com.yudylaw.demo.nio.proto.OpType type = 2;</code>
+     */
+    boolean hasType();
+    /**
+     * <code>required .com.yudylaw.demo.nio.proto.OpType type = 2;</code>
+     */
+    com.yudylaw.demo.nio.proto.Zoo.OpType getType();
+
+    // optional bytes data = 3;
+    /**
+     * <code>optional bytes data = 3;</code>
+     */
+    boolean hasData();
+    /**
+     * <code>optional bytes data = 3;</code>
+     */
+    com.google.protobuf.ByteString getData();
+  }
+  /**
+   * Protobuf type {@code com.yudylaw.demo.nio.proto.Response}
+   */
+  public static final class Response extends
+      com.google.protobuf.GeneratedMessage
+      implements ResponseOrBuilder {
+    // Use Response.newBuilder() to construct.
+    private Response(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private Response(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final Response defaultInstance;
+    public static Response getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public Response getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Response(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              path_ = input.readBytes();
+              break;
+            }
+            case 16: {
+              int rawValue = input.readEnum();
+              com.yudylaw.demo.nio.proto.Zoo.OpType value = com.yudylaw.demo.nio.proto.Zoo.OpType.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(2, rawValue);
+              } else {
+                bitField0_ |= 0x00000002;
+                type_ = value;
+              }
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              data_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.yudylaw.demo.nio.proto.Zoo.internal_static_com_yudylaw_demo_nio_proto_Response_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.yudylaw.demo.nio.proto.Zoo.internal_static_com_yudylaw_demo_nio_proto_Response_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.yudylaw.demo.nio.proto.Zoo.Response.class, com.yudylaw.demo.nio.proto.Zoo.Response.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<Response> PARSER =
+        new com.google.protobuf.AbstractParser<Response>() {
+      public Response parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Response(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Response> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string path = 1;
+    public static final int PATH_FIELD_NUMBER = 1;
+    private java.lang.Object path_;
+    /**
+     * <code>required string path = 1;</code>
+     */
+    public boolean hasPath() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string path = 1;</code>
+     */
+    public java.lang.String getPath() {
+      java.lang.Object ref = path_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          path_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string path = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getPathBytes() {
+      java.lang.Object ref = path_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        path_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required .com.yudylaw.demo.nio.proto.OpType type = 2;
+    public static final int TYPE_FIELD_NUMBER = 2;
+    private com.yudylaw.demo.nio.proto.Zoo.OpType type_;
+    /**
+     * <code>required .com.yudylaw.demo.nio.proto.OpType type = 2;</code>
+     */
+    public boolean hasType() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required .com.yudylaw.demo.nio.proto.OpType type = 2;</code>
+     */
+    public com.yudylaw.demo.nio.proto.Zoo.OpType getType() {
+      return type_;
+    }
+
+    // optional bytes data = 3;
+    public static final int DATA_FIELD_NUMBER = 3;
+    private com.google.protobuf.ByteString data_;
+    /**
+     * <code>optional bytes data = 3;</code>
+     */
+    public boolean hasData() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional bytes data = 3;</code>
+     */
+    public com.google.protobuf.ByteString getData() {
+      return data_;
+    }
+
+    private void initFields() {
+      path_ = "";
+      type_ = com.yudylaw.demo.nio.proto.Zoo.OpType.CREATE;
+      data_ = com.google.protobuf.ByteString.EMPTY;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasPath()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasType()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getPathBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeEnum(2, type_.getNumber());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, data_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getPathBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(2, type_.getNumber());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, data_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.yudylaw.demo.nio.proto.Zoo.Response parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.Response parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.Response parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.Response parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.Response parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.Response parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.Response parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.Response parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.Response parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.Response parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.yudylaw.demo.nio.proto.Zoo.Response prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code com.yudylaw.demo.nio.proto.Response}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements com.yudylaw.demo.nio.proto.Zoo.ResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.yudylaw.demo.nio.proto.Zoo.internal_static_com_yudylaw_demo_nio_proto_Response_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.yudylaw.demo.nio.proto.Zoo.internal_static_com_yudylaw_demo_nio_proto_Response_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.yudylaw.demo.nio.proto.Zoo.Response.class, com.yudylaw.demo.nio.proto.Zoo.Response.Builder.class);
+      }
+
+      // Construct using com.yudylaw.demo.nio.proto.Zoo.Response.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        path_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        type_ = com.yudylaw.demo.nio.proto.Zoo.OpType.CREATE;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        data_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.yudylaw.demo.nio.proto.Zoo.internal_static_com_yudylaw_demo_nio_proto_Response_descriptor;
+      }
+
+      public com.yudylaw.demo.nio.proto.Zoo.Response getDefaultInstanceForType() {
+        return com.yudylaw.demo.nio.proto.Zoo.Response.getDefaultInstance();
+      }
+
+      public com.yudylaw.demo.nio.proto.Zoo.Response build() {
+        com.yudylaw.demo.nio.proto.Zoo.Response result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.yudylaw.demo.nio.proto.Zoo.Response buildPartial() {
+        com.yudylaw.demo.nio.proto.Zoo.Response result = new com.yudylaw.demo.nio.proto.Zoo.Response(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.path_ = path_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.type_ = type_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.data_ = data_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.yudylaw.demo.nio.proto.Zoo.Response) {
+          return mergeFrom((com.yudylaw.demo.nio.proto.Zoo.Response)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.yudylaw.demo.nio.proto.Zoo.Response other) {
+        if (other == com.yudylaw.demo.nio.proto.Zoo.Response.getDefaultInstance()) return this;
+        if (other.hasPath()) {
+          bitField0_ |= 0x00000001;
+          path_ = other.path_;
+          onChanged();
+        }
+        if (other.hasType()) {
+          setType(other.getType());
+        }
+        if (other.hasData()) {
+          setData(other.getData());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasPath()) {
+          
+          return false;
+        }
+        if (!hasType()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.yudylaw.demo.nio.proto.Zoo.Response parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.yudylaw.demo.nio.proto.Zoo.Response) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string path = 1;
+      private java.lang.Object path_ = "";
+      /**
+       * <code>required string path = 1;</code>
+       */
+      public boolean hasPath() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string path = 1;</code>
+       */
+      public java.lang.String getPath() {
+        java.lang.Object ref = path_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          path_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string path = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getPathBytes() {
+        java.lang.Object ref = path_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          path_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string path = 1;</code>
+       */
+      public Builder setPath(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        path_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string path = 1;</code>
+       */
+      public Builder clearPath() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        path_ = getDefaultInstance().getPath();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string path = 1;</code>
+       */
+      public Builder setPathBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        path_ = value;
+        onChanged();
+        return this;
+      }
+
+      // required .com.yudylaw.demo.nio.proto.OpType type = 2;
+      private com.yudylaw.demo.nio.proto.Zoo.OpType type_ = com.yudylaw.demo.nio.proto.Zoo.OpType.CREATE;
+      /**
+       * <code>required .com.yudylaw.demo.nio.proto.OpType type = 2;</code>
+       */
+      public boolean hasType() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required .com.yudylaw.demo.nio.proto.OpType type = 2;</code>
+       */
+      public com.yudylaw.demo.nio.proto.Zoo.OpType getType() {
+        return type_;
+      }
+      /**
+       * <code>required .com.yudylaw.demo.nio.proto.OpType type = 2;</code>
+       */
+      public Builder setType(com.yudylaw.demo.nio.proto.Zoo.OpType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000002;
+        type_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required .com.yudylaw.demo.nio.proto.OpType type = 2;</code>
+       */
+      public Builder clearType() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        type_ = com.yudylaw.demo.nio.proto.Zoo.OpType.CREATE;
+        onChanged();
+        return this;
+      }
+
+      // optional bytes data = 3;
+      private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes data = 3;</code>
+       */
+      public boolean hasData() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional bytes data = 3;</code>
+       */
+      public com.google.protobuf.ByteString getData() {
+        return data_;
+      }
+      /**
+       * <code>optional bytes data = 3;</code>
+       */
+      public Builder setData(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        data_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bytes data = 3;</code>
+       */
+      public Builder clearData() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        data_ = getDefaultInstance().getData();
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:com.yudylaw.demo.nio.proto.Response)
+    }
+
+    static {
+      defaultInstance = new Response(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:com.yudylaw.demo.nio.proto.Response)
+  }
+
+  public interface ZooErrorOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required string error = 1;
+    /**
+     * <code>required string error = 1;</code>
+     */
+    boolean hasError();
+    /**
+     * <code>required string error = 1;</code>
+     */
+    java.lang.String getError();
+    /**
+     * <code>required string error = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getErrorBytes();
+  }
+  /**
+   * Protobuf type {@code com.yudylaw.demo.nio.proto.ZooError}
+   */
+  public static final class ZooError extends
+      com.google.protobuf.GeneratedMessage
+      implements ZooErrorOrBuilder {
+    // Use ZooError.newBuilder() to construct.
+    private ZooError(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private ZooError(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final ZooError defaultInstance;
+    public static ZooError getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public ZooError getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private ZooError(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              error_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.yudylaw.demo.nio.proto.Zoo.internal_static_com_yudylaw_demo_nio_proto_ZooError_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.yudylaw.demo.nio.proto.Zoo.internal_static_com_yudylaw_demo_nio_proto_ZooError_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.yudylaw.demo.nio.proto.Zoo.ZooError.class, com.yudylaw.demo.nio.proto.Zoo.ZooError.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<ZooError> PARSER =
+        new com.google.protobuf.AbstractParser<ZooError>() {
+      public ZooError parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new ZooError(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ZooError> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string error = 1;
+    public static final int ERROR_FIELD_NUMBER = 1;
+    private java.lang.Object error_;
+    /**
+     * <code>required string error = 1;</code>
+     */
+    public boolean hasError() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string error = 1;</code>
+     */
+    public java.lang.String getError() {
+      java.lang.Object ref = error_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          error_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string error = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getErrorBytes() {
+      java.lang.Object ref = error_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        error_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private void initFields() {
+      error_ = "";
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasError()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getErrorBytes());
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getErrorBytes());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.yudylaw.demo.nio.proto.Zoo.ZooError parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.ZooError parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.ZooError parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.ZooError parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.ZooError parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.ZooError parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.ZooError parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.ZooError parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.ZooError parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.yudylaw.demo.nio.proto.Zoo.ZooError parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.yudylaw.demo.nio.proto.Zoo.ZooError prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code com.yudylaw.demo.nio.proto.ZooError}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements com.yudylaw.demo.nio.proto.Zoo.ZooErrorOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.yudylaw.demo.nio.proto.Zoo.internal_static_com_yudylaw_demo_nio_proto_ZooError_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.yudylaw.demo.nio.proto.Zoo.internal_static_com_yudylaw_demo_nio_proto_ZooError_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.yudylaw.demo.nio.proto.Zoo.ZooError.class, com.yudylaw.demo.nio.proto.Zoo.ZooError.Builder.class);
+      }
+
+      // Construct using com.yudylaw.demo.nio.proto.Zoo.ZooError.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        error_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.yudylaw.demo.nio.proto.Zoo.internal_static_com_yudylaw_demo_nio_proto_ZooError_descriptor;
+      }
+
+      public com.yudylaw.demo.nio.proto.Zoo.ZooError getDefaultInstanceForType() {
+        return com.yudylaw.demo.nio.proto.Zoo.ZooError.getDefaultInstance();
+      }
+
+      public com.yudylaw.demo.nio.proto.Zoo.ZooError build() {
+        com.yudylaw.demo.nio.proto.Zoo.ZooError result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.yudylaw.demo.nio.proto.Zoo.ZooError buildPartial() {
+        com.yudylaw.demo.nio.proto.Zoo.ZooError result = new com.yudylaw.demo.nio.proto.Zoo.ZooError(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.error_ = error_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.yudylaw.demo.nio.proto.Zoo.ZooError) {
+          return mergeFrom((com.yudylaw.demo.nio.proto.Zoo.ZooError)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.yudylaw.demo.nio.proto.Zoo.ZooError other) {
+        if (other == com.yudylaw.demo.nio.proto.Zoo.ZooError.getDefaultInstance()) return this;
+        if (other.hasError()) {
+          bitField0_ |= 0x00000001;
+          error_ = other.error_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasError()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.yudylaw.demo.nio.proto.Zoo.ZooError parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.yudylaw.demo.nio.proto.Zoo.ZooError) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string error = 1;
+      private java.lang.Object error_ = "";
+      /**
+       * <code>required string error = 1;</code>
+       */
+      public boolean hasError() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string error = 1;</code>
+       */
+      public java.lang.String getError() {
+        java.lang.Object ref = error_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          error_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string error = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getErrorBytes() {
+        java.lang.Object ref = error_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          error_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string error = 1;</code>
+       */
+      public Builder setError(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        error_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string error = 1;</code>
+       */
+      public Builder clearError() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        error_ = getDefaultInstance().getError();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string error = 1;</code>
+       */
+      public Builder setErrorBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        error_ = value;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:com.yudylaw.demo.nio.proto.ZooError)
+    }
+
+    static {
+      defaultInstance = new ZooError(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:com.yudylaw.demo.nio.proto.ZooError)
   }
 
   private static com.google.protobuf.Descriptors.Descriptor
@@ -1961,6 +3704,21 @@ public final class Zoo {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_com_yudylaw_demo_nio_proto_SetWatches_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_yudylaw_demo_nio_proto_Request_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_com_yudylaw_demo_nio_proto_Request_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_yudylaw_demo_nio_proto_Response_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_com_yudylaw_demo_nio_proto_Response_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_yudylaw_demo_nio_proto_ZooError_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_com_yudylaw_demo_nio_proto_ZooError_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -1975,11 +3733,18 @@ public final class Zoo {
       "mo.nio.proto.IQType\022\017\n\007content\030\002 \001(\014\"Q\n\014" +
       "WatcherEvent\0223\n\004type\030\001 \002(\0162%.com.yudylaw" +
       ".demo.nio.proto.EventType\022\014\n\004path\030\002 \002(\t\"" +
-      "/\n\nSetWatches\022\014\n\004host\030\001 \002(\t\022\023\n\013dataWatch" +
-      "es\030\002 \003(\t**\n\006IQType\022\010\n\004PING\020\000\022\013\n\007WATCHES\020" +
-      "\001\022\t\n\005EVENT\020\002*e\n\tEventType\022\010\n\004None\020\000\022\017\n\013N" +
-      "odeCreated\020\001\022\017\n\013NodeDeleted\020\002\022\023\n\017NodeDat" +
-      "aChanged\020\003\022\027\n\023NodeChildrenChanged\020\004"
+      "\032\n\nSetWatches\022\014\n\004path\030\001 \002(\t\"W\n\007Request\022\014" +
+      "\n\004path\030\001 \002(\t\0220\n\004type\030\002 \002(\0162\".com.yudylaw" +
+      ".demo.nio.proto.OpType\022\014\n\004data\030\003 \001(\014\"X\n\010" +
+      "Response\022\014\n\004path\030\001 \002(\t\0220\n\004type\030\002 \002(\0162\".c" +
+      "om.yudylaw.demo.nio.proto.OpType\022\014\n\004data",
+      "\030\003 \001(\014\"\031\n\010ZooError\022\r\n\005error\030\001 \002(\t*P\n\006IQT" +
+      "ype\022\010\n\004PING\020\000\022\013\n\007WATCHES\020\001\022\t\n\005EVENT\020\002\022\013\n" +
+      "\007REQUEST\020\003\022\014\n\010RESPONSE\020\004\022\t\n\005ERROR\020\005*e\n\tE" +
+      "ventType\022\010\n\004None\020\000\022\017\n\013NodeCreated\020\001\022\017\n\013N" +
+      "odeDeleted\020\002\022\023\n\017NodeDataChanged\020\003\022\027\n\023Nod" +
+      "eChildrenChanged\020\004*5\n\006OpType\022\n\n\006CREATE\020\001" +
+      "\022\n\n\006DELETE\020\002\022\n\n\006UPDATE\020\003\022\007\n\003GET\020\004"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -2003,7 +3768,25 @@ public final class Zoo {
           internal_static_com_yudylaw_demo_nio_proto_SetWatches_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_com_yudylaw_demo_nio_proto_SetWatches_descriptor,
-              new java.lang.String[] { "Host", "DataWatches", });
+              new java.lang.String[] { "Path", });
+          internal_static_com_yudylaw_demo_nio_proto_Request_descriptor =
+            getDescriptor().getMessageTypes().get(3);
+          internal_static_com_yudylaw_demo_nio_proto_Request_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_com_yudylaw_demo_nio_proto_Request_descriptor,
+              new java.lang.String[] { "Path", "Type", "Data", });
+          internal_static_com_yudylaw_demo_nio_proto_Response_descriptor =
+            getDescriptor().getMessageTypes().get(4);
+          internal_static_com_yudylaw_demo_nio_proto_Response_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_com_yudylaw_demo_nio_proto_Response_descriptor,
+              new java.lang.String[] { "Path", "Type", "Data", });
+          internal_static_com_yudylaw_demo_nio_proto_ZooError_descriptor =
+            getDescriptor().getMessageTypes().get(5);
+          internal_static_com_yudylaw_demo_nio_proto_ZooError_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_com_yudylaw_demo_nio_proto_ZooError_descriptor,
+              new java.lang.String[] { "Error", });
           return null;
         }
       };

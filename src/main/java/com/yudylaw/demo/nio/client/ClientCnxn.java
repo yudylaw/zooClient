@@ -3,6 +3,7 @@ package com.yudylaw.demo.nio.client;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.yudylaw.demo.nio.proto.Zoo.IQType;
 import com.yudylaw.demo.nio.proto.Zoo.Packet;
+import com.yudylaw.demo.nio.proto.Zoo.Response;
 import com.yudylaw.demo.nio.proto.Zoo.WatcherEvent;
 import com.yudylaw.demo.nio.server.Watcher;
 
@@ -56,6 +57,14 @@ public class ClientCnxn {
         }
     };
     
+    public void addPacket(Packet packet){
+        sendThread.addPacket(packet);
+    }
+    
+    public void addPendingRequest(RequestPacket rp){
+        sendThread.addPendingRequest(rp);
+    }
+    
     class EventThread extends Thread {
         private volatile boolean running = true;
         private final LinkedBlockingQueue<Object> waitingEvents =
@@ -105,7 +114,14 @@ public class ClientCnxn {
         private final int TIMEOUT = 1000;
         private SocketChannel channel = null;
         private SocketAddress localSocketAddr = null;
-        private final LinkedList<Packet> outgoingQueue = new LinkedList<Packet>();
+        /**
+         * These are the packets that need to be sent.
+         */
+        private final LinkedList<Packet> outgoingQueue = new LinkedList<Packet>();    
+        /**
+         * These are the packets that have been sent and are waiting for a response.
+         */
+        private final LinkedList<RequestPacket> pendingQueue = new LinkedList<RequestPacket>();
         private final int PING_TIME = 30000;//30s
         
         public SendThread(SocketAddress addr) throws IOException{
@@ -228,6 +244,21 @@ public class ClientCnxn {
                     break;
                 case WATCHES:
                     break;
+                case RESPONSE:
+//                    Response resp = Response.parseFrom(packet.getContent());
+                    RequestPacket rp = null;
+                    synchronized (pendingQueue) {
+                        rp = pendingQueue.remove();
+                    }
+                    if(rp != null){
+                        //lock
+                        synchronized(rp){
+                            rp.setFinished(true);
+                            logger.debug("notify client {}", rp);
+                            rp.notifyAll();
+                        }
+                    }
+                    break;
                 default:
                     logger.warn("illeage packet type");
                     break;
@@ -248,6 +279,16 @@ public class ClientCnxn {
             }
         }
 
+        private void addPacket(Packet packet){
+            outgoingQueue.add(packet);
+        }
+        
+        private void addPendingRequest(RequestPacket rp){
+            synchronized(pendingQueue){
+                pendingQueue.add(rp);
+            }
+        }
+        
         private Packet pollPacket(){
             Packet packet = outgoingQueue.poll();
             return packet;

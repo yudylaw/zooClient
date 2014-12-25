@@ -7,12 +7,15 @@ enum IQType
 	PING 			 = 0;
 	WATCHES 			 = 1;
 	EVENT			 = 2;
+	REQUEST			 = 3;
+	RESPONSE         = 4;
+	ERROR			 = 5;
 }
 
 message Packet
 {
-	required IQType type   = 1;
-	optional bytes content = 2;
+	required IQType type     = 1;
+	optional bytes content   = 2;
 }
 
 enum EventType
@@ -32,8 +35,34 @@ message WatcherEvent
 
 message SetWatches
 {
-	required string host 		= 1;
-	repeated string dataWatches = 2;
+	required string path 	  = 1;
+}
+
+message Request
+{
+	required string path    = 1;
+	required OpType type    = 2;
+	optional bytes data		= 3;
+}
+
+message Response
+{
+	required string path    = 1;
+	required OpType type    = 2;
+	optional bytes data		= 3;
+}
+
+message ZooError
+{
+	required string error   = 1;
+}
+
+enum OpType
+{
+    CREATE			= 1;
+    DELETE			= 2;
+    UPDATE			= 3;
+    GET				= 4;
 }
 
 

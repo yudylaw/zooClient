@@ -1,5 +1,16 @@
 package com.yudylaw.demo.nio.server;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.yudylaw.demo.nio.proto.Zoo.EventType;
+import com.yudylaw.demo.nio.proto.Zoo.IQType;
+import com.yudylaw.demo.nio.proto.Zoo.Packet;
+import com.yudylaw.demo.nio.proto.Zoo.Request;
+import com.yudylaw.demo.nio.proto.Zoo.SetWatches;
+import com.yudylaw.demo.nio.proto.Zoo.WatcherEvent;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
@@ -7,21 +18,12 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.LinkedList;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.yudylaw.demo.nio.proto.Zoo.EventType;
-import com.yudylaw.demo.nio.proto.Zoo.IQType;
-import com.yudylaw.demo.nio.proto.Zoo.Packet;
-import com.yudylaw.demo.nio.proto.Zoo.WatcherEvent;
-
 /**
  * @author liuyu3@xiaomi.com
  * @since 2014年12月18日
  */
 
-public class NIOServerCnxn {
+public class NIOServerCnxn implements Watcher {
     
     private SocketChannel sock;
     private SelectionKey sk;
@@ -42,7 +44,7 @@ public class NIOServerCnxn {
         //重用
         this.sock.socket().setReuseAddress(true);
         //TODO mock event
-        mockEvent();
+//        mockEvent();
     }
     
     public void doIO(SelectionKey k) throws InterruptedException {
@@ -109,12 +111,33 @@ public class NIOServerCnxn {
         if (incomingBuffer.remaining() == 0) {
             incomingBuffer.flip();
             //TODO
-            Packet packet = Packet.parseFrom(incomingBuffer.array());            
+            Packet packet = Packet.parseFrom(incomingBuffer.array());
+            readRequest(packet);
             incomingBuffer.clear();//position置为0，并不清除buffer内容
             logger.debug("received a packet from {}, packet is {}", new Object[]{sock.getRemoteAddress(), packet});
             lenBuffer.clear();
             //重置
             incomingBuffer = lenBuffer;
+        }
+    }
+    
+    private void readRequest(Packet packet) throws InvalidProtocolBufferException{
+        switch (packet.getType()) {
+            case PING:
+                break;
+            case EVENT:
+                break;
+            case WATCHES:
+                SetWatches setWatches = SetWatches.parseFrom(packet.toByteArray());
+                server.setWatcher(setWatches.getPath(), this);
+                break;
+            case REQUEST:
+                Request req = Request.parseFrom(packet.getContent());
+                server.handle(this, req);
+                break;
+            default:
+                logger.warn("illeage packet type");
+                break;
         }
     }
     
@@ -172,6 +195,10 @@ public class NIOServerCnxn {
         if ((i & SelectionKey.OP_WRITE) != 0) {
             sk.interestOps(i & (~SelectionKey.OP_WRITE));
         }
+    }
+    
+    public void addPacket(Packet packet){
+        outgoingQueue.add(packet);
     }
     
     /**
@@ -248,4 +275,11 @@ public class NIOServerCnxn {
         sock = null;
     
     }
+
+    public void process(WatcherEvent event) {
+        Packet packet = Packet.newBuilder().setContent(event.toByteString())
+                .setType(IQType.EVENT).build();
+        outgoingQueue.add(packet);
+    }
+    
 }

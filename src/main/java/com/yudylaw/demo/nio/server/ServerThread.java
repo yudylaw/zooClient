@@ -1,5 +1,11 @@
 package com.yudylaw.demo.nio.server;
 
+import com.yudylaw.demo.nio.proto.Zoo.IQType;
+import com.yudylaw.demo.nio.proto.Zoo.Packet;
+import com.yudylaw.demo.nio.proto.Zoo.Request;
+import com.yudylaw.demo.nio.proto.Zoo.Response;
+import com.yudylaw.demo.nio.proto.Zoo.ZooError;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +31,7 @@ public class ServerThread extends Thread {
     private final static int TIMEOUT = 5000;
     private static int MAX_CONN;
     private final HashSet<NIOServerCnxn> cnxns = new HashSet<NIOServerCnxn>();
+    private ZooDatabase zooDb;
     
     private final static Logger logger = LoggerFactory.getLogger(ServerThread.class);
     
@@ -50,6 +57,7 @@ public class ServerThread extends Thread {
         super("ServerThread:" + addr);
         //TODO 守护线程的作用
         setDaemon(true);
+        zooDb = new ZooDatabase();
         MAX_CONN = maxConn;
         selector = Selector.open();
         serverSocketChannel = ServerSocketChannel.open();
@@ -121,6 +129,10 @@ public class ServerThread extends Thread {
         }
     }
     
+    public void setWatcher(String path, Watcher watcher){
+        zooDb.addWatch(path, watcher);
+    }
+    
     synchronized public void clear() {
         selector.wakeup();
         HashSet<NIOServerCnxn> cnxns;
@@ -160,6 +172,33 @@ public class ServerThread extends Thread {
             }
         } catch (IOException e) {
             logger.warn("Selector closing", e);
+        }
+    }
+
+    public void handle(NIOServerCnxn cnxn, Request req) {
+        switch(req.getType()){
+            case CREATE:
+                try {
+                    //TODO 缺少会话标识
+                    String path = zooDb.create(req.getPath(), req.getData().toByteArray());
+                    Response resp = Response.newBuilder().setPath(path).setType(req.getType()).build();
+                    Packet packet = Packet.newBuilder().setContent(resp.toByteString()).setType(IQType.RESPONSE).build();
+                    cnxn.addPacket(packet);
+                } catch (Exception e) {
+                    ZooError error = ZooError.newBuilder().setError(e.getMessage()).build();
+                    Packet packet = Packet.newBuilder().setContent(error.toByteString()).setType(IQType.ERROR).build();
+                    cnxn.addPacket(packet);
+                    logger.error("error to create node", e);
+                }
+                break;
+            case GET:
+                break;
+            case UPDATE:
+                break;
+            case DELETE:
+                break;
+            default:
+                break;
         }
     }
 }
