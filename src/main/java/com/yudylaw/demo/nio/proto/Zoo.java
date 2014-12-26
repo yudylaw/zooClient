@@ -18,9 +18,9 @@ public final class Zoo {
      */
     PING(0, 0),
     /**
-     * <code>WATCHES = 1;</code>
+     * <code>SET_WATCHES = 1;</code>
      */
-    WATCHES(1, 1),
+    SET_WATCHES(1, 1),
     /**
      * <code>EVENT = 2;</code>
      */
@@ -44,9 +44,9 @@ public final class Zoo {
      */
     public static final int PING_VALUE = 0;
     /**
-     * <code>WATCHES = 1;</code>
+     * <code>SET_WATCHES = 1;</code>
      */
-    public static final int WATCHES_VALUE = 1;
+    public static final int SET_WATCHES_VALUE = 1;
     /**
      * <code>EVENT = 2;</code>
      */
@@ -70,7 +70,7 @@ public final class Zoo {
     public static IQType valueOf(int value) {
       switch (value) {
         case 0: return PING;
-        case 1: return WATCHES;
+        case 1: return SET_WATCHES;
         case 2: return EVENT;
         case 3: return REQUEST;
         case 4: return RESPONSE;
@@ -3738,13 +3738,13 @@ public final class Zoo {
       ".demo.nio.proto.OpType\022\014\n\004data\030\003 \001(\014\"X\n\010" +
       "Response\022\014\n\004path\030\001 \002(\t\0220\n\004type\030\002 \002(\0162\".c" +
       "om.yudylaw.demo.nio.proto.OpType\022\014\n\004data",
-      "\030\003 \001(\014\"\031\n\010ZooError\022\r\n\005error\030\001 \002(\t*P\n\006IQT" +
-      "ype\022\010\n\004PING\020\000\022\013\n\007WATCHES\020\001\022\t\n\005EVENT\020\002\022\013\n" +
-      "\007REQUEST\020\003\022\014\n\010RESPONSE\020\004\022\t\n\005ERROR\020\005*e\n\tE" +
-      "ventType\022\010\n\004None\020\000\022\017\n\013NodeCreated\020\001\022\017\n\013N" +
-      "odeDeleted\020\002\022\023\n\017NodeDataChanged\020\003\022\027\n\023Nod" +
-      "eChildrenChanged\020\004*5\n\006OpType\022\n\n\006CREATE\020\001" +
-      "\022\n\n\006DELETE\020\002\022\n\n\006UPDATE\020\003\022\007\n\003GET\020\004"
+      "\030\003 \001(\014\"\031\n\010ZooError\022\r\n\005error\030\001 \002(\t*T\n\006IQT" +
+      "ype\022\010\n\004PING\020\000\022\017\n\013SET_WATCHES\020\001\022\t\n\005EVENT\020" +
+      "\002\022\013\n\007REQUEST\020\003\022\014\n\010RESPONSE\020\004\022\t\n\005ERROR\020\005*" +
+      "e\n\tEventType\022\010\n\004None\020\000\022\017\n\013NodeCreated\020\001\022" +
+      "\017\n\013NodeDeleted\020\002\022\023\n\017NodeDataChanged\020\003\022\027\n" +
+      "\023NodeChildrenChanged\020\004*5\n\006OpType\022\n\n\006CREA" +
+      "TE\020\001\022\n\n\006DELETE\020\002\022\n\n\006UPDATE\020\003\022\007\n\003GET\020\004"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {

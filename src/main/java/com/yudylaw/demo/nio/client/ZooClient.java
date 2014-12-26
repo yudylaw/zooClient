@@ -5,6 +5,7 @@ import com.yudylaw.demo.nio.proto.Zoo.IQType;
 import com.yudylaw.demo.nio.proto.Zoo.OpType;
 import com.yudylaw.demo.nio.proto.Zoo.Packet;
 import com.yudylaw.demo.nio.proto.Zoo.Request;
+import com.yudylaw.demo.nio.proto.Zoo.SetWatches;
 import com.yudylaw.demo.nio.server.Watcher;
 
 import org.slf4j.Logger;
@@ -22,14 +23,26 @@ public class ZooClient {
     private ClientCnxn clientCnxn;
     
     public ZooClient(String host, int port, Watcher watcher){
+        this(host, port, "/", watcher);
+    }
+    
+    public ZooClient(String host, int port, String path, Watcher watcher){
         InetSocketAddress addr = new InetSocketAddress(host, port);
         try {
             addShutdownHook();
             clientCnxn = new ClientCnxn(addr, this, watcher);
+            setWatcher(path);
             clientCnxn.start();
         } catch (Exception e) {
             logger.error("error to start client thread", e);
         }
+    }
+    
+    private void setWatcher(String path){
+        SetWatches set = SetWatches.newBuilder().setPath(path).build();
+        Packet packet = Packet.newBuilder().setContent(set.toByteString())
+                .setType(IQType.SET_WATCHES).build();
+        clientCnxn.addPacket(packet);
     }
     
     public void create(String path, byte[] data) throws InterruptedException{

@@ -5,7 +5,7 @@ package com.yudylaw.demo.nio.proto;
 enum IQType
 {
 	PING 			 = 0;
-	WATCHES 			 = 1;
+	SET_WATCHES 		 = 1;
 	EVENT			 = 2;
 	REQUEST			 = 3;
 	RESPONSE         = 4;

@@ -72,7 +72,6 @@ public class ServerThread extends Thread {
         while(!serverSocketChannel.socket().isClosed()){
             try{
                 selector.select(TIMEOUT);
-                logger.debug("server selector.");
                 Set<SelectionKey> keys;
                 //TODO　单线程，不需要同步
                 synchronized (this) {

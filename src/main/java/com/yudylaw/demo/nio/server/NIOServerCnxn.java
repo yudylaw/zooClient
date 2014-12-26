@@ -16,7 +16,7 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
-import java.util.LinkedList;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @author liuyu3@xiaomi.com
@@ -27,9 +27,9 @@ public class NIOServerCnxn implements Watcher {
     
     private SocketChannel sock;
     private SelectionKey sk;
-    private final LinkedList<Packet> outgoingQueue = new LinkedList<Packet>();
-    private static ByteBuffer lenBuffer = ByteBuffer.allocate(4);
-    private static ByteBuffer incomingBuffer = lenBuffer;
+    private LinkedBlockingQueue<Packet> outgoingQueue = new LinkedBlockingQueue<Packet>();
+    private ByteBuffer lenBuffer = ByteBuffer.allocate(4);
+    private ByteBuffer incomingBuffer = lenBuffer;
     private ServerThread server;
     
     private final static Logger logger = LoggerFactory.getLogger(NIOServerCnxn.class);
@@ -78,7 +78,7 @@ public class NIOServerCnxn implements Watcher {
             } else if (k.isWritable()){
                 logger.debug("client {} is writable", sock.getRemoteAddress());
                 if(outgoingQueue.size() > 0){
-                    Packet packet = outgoingQueue.poll();
+                    Packet packet = outgoingQueue.remove();
                     if(packet != null){
                         write(packet);
                     }
@@ -112,7 +112,7 @@ public class NIOServerCnxn implements Watcher {
             incomingBuffer.flip();
             //TODO
             Packet packet = Packet.parseFrom(incomingBuffer.array());
-            readRequest(packet);
+            handlePacket(packet);
             incomingBuffer.clear();//position置为0，并不清除buffer内容
             logger.debug("received a packet from {}, packet is {}", new Object[]{sock.getRemoteAddress(), packet});
             lenBuffer.clear();
@@ -121,14 +121,14 @@ public class NIOServerCnxn implements Watcher {
         }
     }
     
-    private void readRequest(Packet packet) throws InvalidProtocolBufferException{
+    private void handlePacket(Packet packet) throws InvalidProtocolBufferException{
         switch (packet.getType()) {
             case PING:
                 break;
             case EVENT:
                 break;
-            case WATCHES:
-                SetWatches setWatches = SetWatches.parseFrom(packet.toByteArray());
+            case SET_WATCHES:
+                SetWatches setWatches = SetWatches.parseFrom(packet.getContent());
                 server.setWatcher(setWatches.getPath(), this);
                 break;
             case REQUEST:
@@ -184,17 +184,11 @@ public class NIOServerCnxn implements Watcher {
     }
     
     private void enableWrite() {
-        int i = sk.interestOps();
-        if ((i & SelectionKey.OP_WRITE) == 0) {
-            sk.interestOps(i | SelectionKey.OP_WRITE);
-        }
+        sk.interestOps(sk.interestOps() | SelectionKey.OP_WRITE);
     }
 
     private void disableWrite() {
-        int i = sk.interestOps();
-        if ((i & SelectionKey.OP_WRITE) != 0) {
-            sk.interestOps(i & (~SelectionKey.OP_WRITE));
-        }
+        sk.interestOps(sk.interestOps() & (~SelectionKey.OP_WRITE));
     }
     
     public void addPacket(Packet packet){
@@ -280,6 +274,10 @@ public class NIOServerCnxn implements Watcher {
         Packet packet = Packet.newBuilder().setContent(event.toByteString())
                 .setType(IQType.EVENT).build();
         outgoingQueue.add(packet);
+        if(sk.isValid()){
+            sk.selector().wakeup();
+            sk.interestOps(sk.interestOps() | SelectionKey.OP_WRITE);
+        }
     }
     
 }

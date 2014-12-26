@@ -3,7 +3,6 @@ package com.yudylaw.demo.nio.client;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.yudylaw.demo.nio.proto.Zoo.IQType;
 import com.yudylaw.demo.nio.proto.Zoo.Packet;
-import com.yudylaw.demo.nio.proto.Zoo.Response;
 import com.yudylaw.demo.nio.proto.Zoo.WatcherEvent;
 import com.yudylaw.demo.nio.server.Watcher;
 
@@ -71,7 +70,7 @@ public class ClientCnxn {
                 new LinkedBlockingQueue<Object>();
 
         public EventThread() {
-            super("EventThread");
+            setName("EventThread");
             setUncaughtExceptionHandler(uncaughtExceptionHandler);
             setDaemon(true);
         }
@@ -126,6 +125,7 @@ public class ClientCnxn {
         
         public SendThread(SocketAddress addr) throws IOException{
             setUncaughtExceptionHandler(uncaughtExceptionHandler);
+            setName("SendThread");
             setDaemon(true);
             selector = Selector.open();
             channel = SocketChannel.open();
@@ -175,14 +175,12 @@ public class ClientCnxn {
                                 return;
                             }
                             read(c);
-                            socketKey.interestOps(SelectionKey.OP_WRITE);
                         } else if ((key.readyOps() & SelectionKey.OP_WRITE) > 0) {
                             logger.debug("server is writable");
                             Packet packet = pollPacket();
                             if (packet != null) {
                                 write(packet);
                             }
-                            socketKey.interestOps(SelectionKey.OP_READ);
                         }
                     }
                     
@@ -242,7 +240,7 @@ public class ClientCnxn {
                     WatcherEvent event = WatcherEvent.parseFrom(packet.getContent());
                     eventThread.queueEvent(event);
                     break;
-                case WATCHES:
+                case SET_WATCHES:
                     break;
                 case RESPONSE:
 //                    Response resp = Response.parseFrom(packet.getContent());

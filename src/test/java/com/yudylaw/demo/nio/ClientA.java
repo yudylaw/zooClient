@@ -1,5 +1,6 @@
-package com.yudylaw.demo.nio.client;
+package com.yudylaw.demo.nio;
 
+import com.yudylaw.demo.nio.client.ZooClient;
 import com.yudylaw.demo.nio.proto.Zoo.WatcherEvent;
 import com.yudylaw.demo.nio.server.Watcher;
 
@@ -12,9 +13,9 @@ import org.slf4j.LoggerFactory;
  * 测试类
  */
 
-public class TestClient {
+public class ClientA {
 
-    private final static Logger logger = LoggerFactory.getLogger(TestClient.class);
+    private final static Logger logger = LoggerFactory.getLogger(ClientA.class);
     
     public static void main(String[] args) {
         
