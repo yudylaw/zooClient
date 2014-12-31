@@ -155,21 +155,6 @@ public class QuorumCnxManager {
         // Starts listener thread that waits for connection requests 
         listener = new Listener();
     }
-
-    /**
-     * Invokes initiateConnection for testing purposes
-     * 
-     * @param sid
-     */
-    public void testInitiateConnection(long sid) throws Exception {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Opening channel to server " + sid);
-        }
-        Socket sock = new Socket();
-        setSockOpts(sock);
-        sock.connect(self.getVotingView().get(sid).electionAddr, cnxTO);
-        initiateConnection(sock, sid);
-    }
     
     /**
      * If this server has initiated the connection, then it gives up on the
@@ -278,6 +263,7 @@ public class QuorumCnxManager {
              */
             LOG.debug("Create new connection to server: " + sid);
             closeSocket(sock);
+            //永远从myid大的一方发起连接
             connectOne(sid);
 
             // Otherwise start worker threads to receive data.
@@ -363,6 +349,7 @@ public class QuorumCnxManager {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Opening channel to server " + sid);
                 }
+                //以Client端连接过去
                 Socket sock = new Socket();
                 setSockOpts(sock);
                 sock.connect(self.getView().get(sid).electionAddr, cnxTO);
@@ -479,6 +466,7 @@ public class QuorumCnxManager {
 
     /**
      * Thread to listen on some port
+     * 监听投票端口，建立sock连接
      */
     public class Listener extends Thread {
 
@@ -493,6 +481,7 @@ public class QuorumCnxManager {
             InetSocketAddress addr;
             while((!shutdown) && (numRetries < 3)){
                 try {
+                    //投票端口Server端
                     ss = new ServerSocket();
                     ss.setReuseAddress(true);
                     if (self.getQuorumListenOnAllIPs()) {
@@ -502,10 +491,10 @@ public class QuorumCnxManager {
                         addr = self.quorumPeers.get(self.getId()).electionAddr;
                     }
                     LOG.info("My election bind port: " + addr.toString());
-                    setName(self.quorumPeers.get(self.getId()).electionAddr
-                            .toString());
+                    setName(self.quorumPeers.get(self.getId()).electionAddr.toString());
                     ss.bind(addr);
                     while (!shutdown) {
+                        //阻塞IO，等待新连接
                         Socket client = ss.accept();
                         setSockOpts(client);
                         LOG.info("Received connection request "

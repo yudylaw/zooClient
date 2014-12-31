@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.HashMap;
@@ -276,8 +275,6 @@ public class QuorumPeer extends Thread {
         return state;
     }
 
-    DatagramSocket udpSocket;
-
     private InetSocketAddress myQuorumAddr;
 
     public InetSocketAddress getQuorumAddress(){
@@ -428,10 +425,6 @@ public class QuorumPeer extends Thread {
 
     public void shutdown() {
         running = false;
-        if(udpSocket != null) {
-            udpSocket.close();
-        }
-        
         if(getElectionAlg() != null){
             this.interrupt();
             getElectionAlg().shutdown();
